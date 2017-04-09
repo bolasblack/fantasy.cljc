@@ -1,5 +1,6 @@
 (ns ramda.curry
-  (:require [ramda.func :refer [always]]))
+  (:require [ramda.func :refer [always]]
+            [ramda.utils :as u]))
 
 (def __ "@@ramda/placeholder")
 
@@ -93,9 +94,7 @@
   ([f]
    (condp = (arglist-count f)
      1 (curry (arity f) f)
-     (let [message (str "curry called with multiple arglist function, use (curry arity f) instead")]
-       #?(:cljs (throw (js/Error message))
-          :clj (throw (Error. message))))))
+     (u/throw-error (str "curry called with multiple arglist function, use (curry arity f) instead"))))
   ([arity f]
    (condp = arity
      0 f
@@ -103,3 +102,6 @@
      2 (curry-2 f)
      3 (curry-3 f)
      (curry-n arity [] f))))
+
+(defmacro defcurry [name & body]
+  `(def ~name (curry (fn ~@body))))

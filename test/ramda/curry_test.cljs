@@ -1,7 +1,6 @@
 (ns ramda.curry-test
-  (:require [cljs.nodejs :as nodejs]
-            [ramda.curry :as R]
-            [clojure.test :refer [deftest are is run-tests]]))
+  (:require [ramda.curry :as R]
+            [clojure.test :refer [deftest are is]]))
 
 (defn test-curry-fn [curry-fn]
   (let [f (curry-fn (fn [a b c] [a b c]))
@@ -38,13 +37,3 @@
 
 (deftest curry-n
   (test-curry-fn (fn [f] (R/curry-n (R/arity f) [] f))))
-
-(nodejs/enable-util-print!)
-
-(defn -main [& args]
-  (try
-    (run-tests)
-    (catch js/Error e
-      (println (.-stack e)))))
-
-(set! *main-cli-fn* -main)
