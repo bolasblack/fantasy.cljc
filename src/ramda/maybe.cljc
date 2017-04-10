@@ -1,5 +1,6 @@
 (ns ramda.maybe
   (:require [ramda.protocols :as p]
+            [ramda.standard-func :as standard-fn]
             [ramda.multimethods :as m]
             [ramda.utils :as u :include-macros true :refer-macros [defpr extend-types]]))
 
@@ -86,11 +87,11 @@
 (defmethod m/from Nothing [a b]
   b)
 
-(defmethod m/of Maybe [type value]
+(defmethod standard-fn/of Maybe [type value]
   (just value))
 
 ;; https://github.com/ramda/ramda-fantasy/blob/723b3f71d676f6e69764e56f15e98ff7e3039d53/src/Maybe.js#L92
-(defmethod m/chain-rec Maybe [type f i]
+(defmethod standard-fn/chain-rec Maybe [type f i]
   (loop [state (u/chain-rec-next i)]
     (if (:next? state)
       (let [result (f u/chain-rec-next u/chain-rec-done (:value state))]

@@ -1,5 +1,6 @@
 (ns ramda.either
   (:require [ramda.protocols :as p]
+            [ramda.standard-func :as standard-fn]
             [ramda.multimethods :as m]
             [ramda.utils :as u :include-macros true :refer-macros [defpr extend-types]]))
 
@@ -98,11 +99,11 @@
 (defmethod m/from Right [a]
   (.-value a))
 
-(defmethod m/of Either [type value]
+(defmethod standard-fn/of Either [type value]
   (right value))
 
 ;; https://github.com/ramda/ramda-fantasy/blob/723b3f71d676f6e69764e56f15e98ff7e3039d53/src/Either.js#L71
-(defmethod m/chain-rec Either [type f i]
+(defmethod standard-fn/chain-rec Either [type f i]
   (loop [state (u/chain-rec-next i)]
     (if (:next? state)
       (let [result (f u/chain-rec-next u/chain-rec-done (:value state))]
