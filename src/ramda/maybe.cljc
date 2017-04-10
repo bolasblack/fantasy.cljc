@@ -32,9 +32,8 @@
     (f (.-value this))))
 
 (deftype Nothing []
-  IFn
-  (-invoke [this]
-    this)
+  #?(:cljs
+     IFn (-invoke [this] this))
 
   Maybe
   (just? [this] false)

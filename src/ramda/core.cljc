@@ -5,6 +5,7 @@
             [ramda.protocols :as p]
             [ramda.either :as either]
             [ramda.maybe :as maybe]
+            [ramda.builtin-patch :as builtin-patch]
             [ramda.multimethods :as multimethods]
             [ramda.utils :as u :include-macros true]))
 
@@ -12,41 +13,32 @@
                func-ns [always]
                either [Either Left Right left right]
                maybe [Maybe Just Nothing just nothing]
+               builtin-patch [patch-collection]
                multimethods [of chain-rec from]})
 
+(builtin-patch/patch-all)
+
 (defcurry map [f a]
-  {:pre [(or (and (fn? f) (satisfies? p/Functor a))
-             (and (fn? f) (coll? a)))]}
-  (if (satisfies? p/Functor a)
-    (p/fl-map a f)
-    (clojure.core/map f a)))
+  {:pre [(fn? f) (satisfies? p/Functor a)]}
+  (p/fl-map a f))
 
 (defcurry ap [a b]
-  {:pre [(or (and (satisfies? p/Apply a) (satisfies? p/Apply b))
-             (and (coll? a) (every? fn? a) (coll? b)))]}
-  (if (and (satisfies? p/Apply a) (satisfies? p/Apply b))
-    (p/fl-ap b a)
-    (apply clojure.core/concat (map #(map % b) a))))
+  {:pre [(satisfies? p/Apply a) (satisfies? p/Apply b)]}
+  (p/fl-ap b a))
 
 (defcurry reduce [f x a]
-  {:pre [(or (and (fn? f) (satisfies? p/Foldable a))
-             (and (fn? f) (coll? a)))]}
-  (if (satisfies? p/Foldable a)
-    (p/fl-reduce a f x)
-    (clojure.core/reduce f x a)))
+  {:pre [(fn? f) (satisfies? p/Foldable a)]}
+  (p/fl-reduce a f x))
 
 (defcurry concat [a b]
-  {:pre [(or (and (satisfies? p/Semigroup a) (satisfies? p/Semigroup b))
-             (and (coll? a) (coll? b)))]}
-  (if (satisfies? p/Semigroup b)
-    (p/fl-concat b a)
-    (clojure.core/concat a b)))
+  {:pre [(satisfies? p/Semigroup a)
+         (satisfies? p/Semigroup b)]}
+  (p/fl-concat b a))
 
 (defcurry equals [a b]
-  (if (and (satisfies? p/Setoid a)
-           (satisfies? p/Setoid b))
-    (p/fl-equals b a)
-    (= a b)))
+  {:pre [(satisfies? p/Setoid a)
+         (satisfies? p/Setoid b)]}
+  (p/fl-equals b a))
 
 (defcurry alt [a b]
   {:pre [(satisfies? p/Setoid a)
@@ -89,14 +81,3 @@
 (defcurry extract [a]
   {:pre [(satisfies? p/Comonad a)]}
   (p/fl-extract a))
-
-(comment
-  (cljs.nodejs/enable-util-print!)
-
-  (defn -main [& args]
-    (try
-      (println (satisfies? Either (left 123)))
-      (catch js/Error e
-        (println (.-stack e)))))
-
-  (set! *main-cli-fn* -main))

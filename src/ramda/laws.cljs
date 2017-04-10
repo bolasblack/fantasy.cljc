@@ -109,6 +109,6 @@
 
 
 (defn foldable [u f x]
-  (= (->> (R/reduce (fn [acc x] (concat acc [x])) [] u)
+  (= (->> (R/reduce (fn [acc x] (R/concat acc [x])) [] u)
           (R/reduce f x))
      (R/reduce f x u)))

@@ -25,9 +25,6 @@
   #?(:cljs (throw (js/Error msg))
      :clj (throw (Error. msg))))
 
-(defn satisfy-protocols? [protocols a]
-  (some #(satisfies? % a) protocols))
-
 (defn equals [a b]
   (and
    (= (type a) (type b))
