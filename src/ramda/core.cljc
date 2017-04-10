@@ -25,7 +25,7 @@
   {:pre [(or (and (satisfies? p/Apply a) (satisfies? p/Apply b))
              (and (coll? a) (every? fn? a) (coll? b)))]}
   (if (and (satisfies? p/Apply a) (satisfies? p/Apply b))
-    (p/fl-ap a b)
+    (p/fl-ap b a)
     (apply clojure.core/concat (map #(map % b) a))))
 
 (defcurry reduce [f x a]

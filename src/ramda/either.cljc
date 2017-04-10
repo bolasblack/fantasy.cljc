@@ -51,7 +51,9 @@
 
   p/Apply
   (p/fl-ap [this that]
-    (p/fl-map that (.-value this)))
+    (if (right? that)
+      (p/fl-map this (.-value that))
+      that))
 
   p/Extend
   (p/fl-extend [this f]

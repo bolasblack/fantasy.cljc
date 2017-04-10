@@ -23,7 +23,9 @@
 
   p/Apply
   (p/fl-ap [this that]
-    (p/fl-map that (.-value this)))
+    (if (just? that)
+      (p/fl-map this (.-value that))
+      that))
 
   p/Chain
   (p/fl-chain [this f]
