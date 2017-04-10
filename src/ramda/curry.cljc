@@ -1,6 +1,5 @@
 (ns ramda.curry
-  (:require [ramda.func :refer [always]]
-            [ramda.utils :as u]))
+  (:require [ramda.utils :as u]))
 
 (def __ "@@ramda/placeholder")
 
