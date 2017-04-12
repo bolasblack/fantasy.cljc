@@ -11,33 +11,7 @@
 (deftype Just [value]
   Maybe
   (just? [this] true)
-  (nothing? [this] false)
-
-  p/Alt
-  (p/fl-alt [this a]
-    this)
-
-  p/Functor
-  (p/fl-map [this f]
-    (Just. (f (.-value this))))
-
-  p/Foldable
-  (p/fl-reduce [this f x]
-    (f x (.-value this)))
-
-  p/Apply
-  (p/fl-ap [this that]
-    (if (just? that)
-      (p/fl-map this (.-value that))
-      that))
-
-  p/Chain
-  (p/fl-chain [this f]
-    (f (.-value this)))
-
-  p/Traversable
-  (p/fl-traverse [this type-rep f]
-    (p/fl-map (f (.-value this)) #(Just. %))))
+  (nothing? [this] false))
 
 (deftype Nothing []
   #?(:cljs
@@ -45,31 +19,7 @@
 
   Maybe
   (just? [this] false)
-  (nothing? [this] true)
-
-  p/Alt
-  (p/fl-alt [this a]
-    a)
-
-  p/Functor
-  (p/fl-map [this f]
-    this)
-
-  p/Foldable
-  (p/fl-reduce [this f x]
-    x)
-
-  p/Apply
-  (p/fl-ap [this a]
-    this)
-
-  p/Chain
-  (p/fl-chain [this f]
-    this)
-
-  p/Traversable
-  (p/fl-traverse [this type-rep f]
-    (standard-fn/of type-rep this)))
+  (nothing? [this] true))
 
 (extend-types
  [Just Nothing]
@@ -77,6 +27,40 @@
  IEquiv
  (-equiv [this a]
          (p/fl-equals this a))
+
+ p/Alt
+ (p/fl-alt [this a]
+   (if (just? this) this a))
+
+ p/Functor
+ (p/fl-map [this f]
+           (if (just? this)
+             (Just. (f (.-value this)))
+             this))
+
+ p/Foldable
+ (p/fl-reduce [this f x]
+              (if (just? this)
+                (f x (.-value this))
+                x))
+
+ p/Apply
+ (p/fl-ap [this a]
+          (if (just? a)
+            (p/fl-map this (.-value a))
+            a))
+
+ p/Chain
+ (p/fl-chain [this f]
+             (if (just? this)
+               (f (.-value this))
+               this))
+
+ p/Traversable
+ (p/fl-traverse [this type-rep f]
+                (if (just? this)
+                  (p/fl-map (f (.-value this)) #(Just. %))
+                  (standard-fn/of type-rep this)))
 
  p/Setoid
  (p/fl-equals [this a]

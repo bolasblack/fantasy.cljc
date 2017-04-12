@@ -11,65 +11,12 @@
 (deftype Left [value]
   Either
   (left? [this] true)
-  (right? [this] false)
-
-  p/Functor
-  (p/fl-map [this f]
-    this)
-
-  p/Bifunctor
-  (p/fl-bimap [this f1 f2]
-    (Left. (f1 (.-value this))))
-
-  p/Apply
-  (p/fl-ap [this that]
-    this)
-
-  p/Extend
-  (p/fl-extend [this f]
-    this)
-
-  p/Chain
-  (p/fl-chain [this f]
-    this)
-
-  p/Traversable
-  (p/fl-traverse [this type-rep f]
-    (standard-fn/of type-rep this)))
+  (right? [this] false))
 
 (deftype Right [value]
   Either
   (left? [this] false)
-  (right? [this] true)
-
-  p/Functor
-  (p/fl-map [this f]
-    (Right. (f (.-value this))))
-
-  p/Bifunctor
-  (p/fl-bimap [this f1 f2]
-    (Right. (f2 (.-value this))))
-
-  p/Apply
-  (p/fl-ap [this that]
-    (if (right? that)
-      (p/fl-map this (.-value that))
-      that))
-
-  p/Extend
-  (p/fl-extend [this f]
-    (Right. (f this)))
-
-  p/Chain
-  (p/fl-chain [this f]
-    (f (.-value this)))
-
-  p/Traversable
-  (p/fl-traverse [this type-rep f]
-    (p/fl-map (f (.-value this)) Right.)))
-
-(defpr [Left Right] [this]
-  (str (if (left? this) "(Left. " "(Right. ") (.-value this) ")"))
+  (right? [this] true))
 
 (extend-types
  [Left Right]
@@ -77,6 +24,42 @@
  IEquiv
  (-equiv [this a]
          (p/fl-equals this a))
+
+ p/Functor
+ (p/fl-map [this f]
+           (if (right? this)
+             (Right. (f (.-value this)))
+             this))
+
+ p/Bifunctor
+ (p/fl-bimap [this f1 f2]
+             (if (right? this)
+               (Right. (f2 (.-value this)))
+               (Left. (f1 (.-value this)))))
+
+ p/Apply
+ (p/fl-ap [this that]
+          (if (right? that)
+            (p/fl-map this (.-value that))
+            that))
+
+ p/Extend
+ (p/fl-extend [this f]
+              (if (right? this)
+                (Right. (f this))
+                this))
+
+ p/Chain
+ (p/fl-chain [this f]
+             (if (right? this)
+               (f (.-value this))
+               this))
+
+ p/Traversable
+ (p/fl-traverse [this type-rep f]
+                (if (right? this)
+                  (p/fl-map (f (.-value this)) Right.)
+                  (standard-fn/of type-rep this)))
 
  p/Setoid
  (p/fl-equals [this a]
@@ -87,6 +70,9 @@
  p/Monad
 
  p/ChainRec)
+
+(defpr [Left Right] [this]
+  (str (if (left? this) "(Left. " "(Right. ") (.-value this) ")"))
 
 (defn left [value]
   (Left. value))

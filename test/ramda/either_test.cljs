@@ -67,7 +67,14 @@
               100)
              (R/left "ERROR")))))
 
-  (testing "Monad")
+  (testing "Monad"
+    (testing "left-identity"
+      (is (laws/monad-left-identity (R/left 1) #(+ 1 %) #(R/of R/Either %)))
+      (is (laws/monad-left-identity (R/right 1) #(+ 1 %) #(R/of R/Either %))))
+
+    (testing "right-identity"
+      (is (laws/monad-right-identity (R/left 1) #(R/of R/Either %)))
+      (is (laws/monad-right-identity (R/right 1) #(R/of R/Either %)))))
 
   (testing "Extend"
     (testing "extend-associative"
