@@ -6,13 +6,16 @@
 
 (defprotocol Maybe
   (just? [this])
-  (nothing? [this])
-  (get-or-else [this a]))
+  (nothing? [this]))
 
 (deftype Just [value]
   Maybe
   (just? [this] true)
   (nothing? [this] false)
+
+  p/Alt
+  (p/fl-alt [this a]
+    this)
 
   p/Functor
   (p/fl-map [this f]
@@ -30,7 +33,11 @@
 
   p/Chain
   (p/fl-chain [this f]
-    (f (.-value this))))
+    (f (.-value this)))
+
+  p/Traversable
+  (p/fl-traverse [this type-rep f]
+    (p/fl-map (f (.-value this)) #(Just. %))))
 
 (deftype Nothing []
   #?(:cljs
@@ -39,6 +46,10 @@
   Maybe
   (just? [this] false)
   (nothing? [this] true)
+
+  p/Alt
+  (p/fl-alt [this a]
+    a)
 
   p/Functor
   (p/fl-map [this f]
@@ -54,24 +65,36 @@
 
   p/Chain
   (p/fl-chain [this f]
-    this))
+    this)
+
+  p/Traversable
+  (p/fl-traverse [this type-rep f]
+    (standard-fn/of type-rep this)))
 
 (extend-types
  [Just Nothing]
 
  IEquiv
  (-equiv [this a]
-         (u/equals this a))
+         (p/fl-equals this a))
 
  p/Setoid
  (p/fl-equals [this a]
-              (u/equals this a))
+              (if (nothing? this)
+                (= (type a) Nothing)
+                (u/equals this a)))
 
  p/Applicative
 
  p/Monad
 
- p/ChainRec)
+ p/ChainRec
+
+ p/Monoid
+
+ p/Plus
+
+ p/Alternative)
 
 (defpr [Just Nothing] [this]
   (if (nothing? this) "(Nothing. )" (str "(Just. " (.-value this) ")")))
@@ -99,3 +122,9 @@
           result
           (recur (.-value result))))
       (just (:value state)))))
+
+(defmethod standard-fn/zero Maybe [type]
+  nothing)
+
+(defmethod standard-fn/empty Maybe [type]
+  nothing)

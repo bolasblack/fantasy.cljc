@@ -17,8 +17,6 @@
   (p/fl-map [this f]
     this)
 
-  ;; extends
-
   p/Bifunctor
   (p/fl-bimap [this f1 f2]
     (Left. (f1 (.-value this))))
@@ -33,7 +31,11 @@
 
   p/Chain
   (p/fl-chain [this f]
-    this))
+    this)
+
+  p/Traversable
+  (p/fl-traverse [this type-rep f]
+    (standard-fn/of type-rep this)))
 
 (deftype Right [value]
   Either
@@ -43,8 +45,6 @@
   p/Functor
   (p/fl-map [this f]
     (Right. (f (.-value this))))
-
-  ;; extends
 
   p/Bifunctor
   (p/fl-bimap [this f1 f2]
@@ -62,7 +62,11 @@
 
   p/Chain
   (p/fl-chain [this f]
-    (f (.-value this))))
+    (f (.-value this)))
+
+  p/Traversable
+  (p/fl-traverse [this type-rep f]
+    (p/fl-map (f (.-value this)) Right.)))
 
 (defpr [Left Right] [this]
   (str (if (left? this) "(Left. " "(Right. ") (.-value this) ")"))
@@ -72,7 +76,7 @@
 
  IEquiv
  (-equiv [this a]
-         (u/equals this a))
+         (p/fl-equals this a))
 
  p/Setoid
  (p/fl-equals [this a]
@@ -82,10 +86,7 @@
 
  p/Monad
 
- p/ChainRec
-
- ;; extends
- )
+ p/ChainRec)
 
 (defn left [value]
   (Left. value))

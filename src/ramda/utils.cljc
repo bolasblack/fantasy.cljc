@@ -35,3 +35,7 @@
 
 (defn chain-rec-done [v]
   {:next? false, :value v})
+
+(defn invoke? [a]
+  (or (fn? a)
+      (ifn? a)))

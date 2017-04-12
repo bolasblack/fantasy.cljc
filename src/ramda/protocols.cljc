@@ -38,7 +38,7 @@
 
 (defprotocol Traversable ; extends Functor Foldable
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#traversable"
-  (fl-traverse [this f1 f2]))
+  (fl-traverse [this type-rep f]))
 
 (defprotocol Monoid ; extends Semigroup
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#monoid")
@@ -54,6 +54,7 @@
 
 (defprotocol Applicative ; extends Apply
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#applicative")
+;; (of [])
 
 (defprotocol Chain ; extends Apply
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#chain"

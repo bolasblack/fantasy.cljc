@@ -1,5 +1,6 @@
 (ns ramda.laws
-  (:require [ramda.core :as R]))
+  (:require [ramda.core :as R]
+            [ramda.compose :as C :include-macros true]))
 
 
 
@@ -112,3 +113,30 @@
   (= (->> (R/reduce (fn [acc x] (R/concat acc [x])) [] u)
           (R/reduce f x))
      (R/reduce f x u)))
+
+
+
+(defn monad-left-identity [a f of]
+  (= (R/chain f (of a))
+     (f a)))
+
+(defn monad-right-identity [m of]
+  (= (R/chain of m)
+     m))
+
+
+
+(defn traversable-naturality [t u type-rep-f type-rep-g]
+  (= (t (R/traverse type-rep-f identity u))
+     (R/traverse type-rep-g t u)))
+
+(defn traversable-identity [u type-rep-f]
+  (= (R/traverse type-rep-f #(R/of type-rep-f %) u)
+     (R/of type-rep-f u)))
+
+(defn traversable-composition [u type-rep-f type-rep-g]
+  (let [Compose (C/defcompose type-rep-f type-rep-g)]
+    (= (R/traverse Compose #(new Compose %) u)
+       (new Compose (->> u
+                         (R/traverse type-rep-f identity)
+                         (R/map #(R/traverse type-rep-g identity %)))))))

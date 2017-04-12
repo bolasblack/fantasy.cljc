@@ -71,4 +71,24 @@
               100)
              R/nothing))))
 
-  (testing "Monad"))
+  (testing "Monad"
+    (testing "left-identity"
+      (is (laws/monad-left-identity R/nothing #(+ 1 %) #(R/of R/Maybe %)))
+      (is (laws/monad-left-identity (R/just 1) #(+ 1 %) #(R/of R/Maybe %))))
+
+    (testing "right-identity"
+      (is (laws/monad-right-identity R/nothing #(R/of R/Maybe %)))
+      (is (laws/monad-right-identity (R/just 1) #(R/of R/Maybe %)))))
+
+  (testing "Traversable"
+    (testing "naturality"
+      (is (laws/traversable-naturality R/to-maybe R/nothing R/Identity R/Maybe))
+      (is (laws/traversable-naturality R/to-maybe (R/just (R/Identity. 1)) R/Identity R/Maybe)))
+
+    (testing "identity"
+      (is (laws/traversable-identity R/nothing R/Identity))
+      (is (laws/traversable-identity (R/just 1) R/Identity)))
+
+    (testing "composition"
+      (is (laws/traversable-composition R/nothing R/Identity R/Maybe))
+      (is (laws/traversable-composition (R/just (R/Identity. (R/just 1))) R/Identity R/Maybe)))))
