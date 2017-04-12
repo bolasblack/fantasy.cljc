@@ -62,6 +62,20 @@
                   (p/fl-map (f (.-value this)) #(Just. %))
                   (standard-fn/of type-rep this)))
 
+ p/Extend
+ (p/fl-extend [this f]
+              (if (just? this)
+                (Just. (f this))
+                this))
+
+ p/Semigroup
+ (p/fl-concat [this that]
+              (if (nothing? this)
+                that
+                (if (nothing? that)
+                  this
+                  (Just. (p/fl-concat (.-value this) (.-value that))))))
+
  p/Setoid
  (p/fl-equals [this a]
               (if (nothing? this)

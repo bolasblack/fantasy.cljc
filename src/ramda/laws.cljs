@@ -17,7 +17,7 @@
 
 
 
-(defn semigroup-associative [a b c]
+(defn semigroup-associativity [a b c]
   (= (-> a (R/concat b) (R/concat c))
      (->> c (R/concat b) (R/concat a))))
 
@@ -140,3 +140,43 @@
        (new Compose (->> u
                          (R/traverse type-rep-f identity)
                          (R/map #(R/traverse type-rep-g identity %)))))))
+
+
+
+(defn monoid-left-identity [m type-rep]
+  (= (->> type-rep (R/empty) (R/concat m))
+     m))
+
+(defn monoid-right-identity [m type-rep]
+  (= (R/concat (R/empty type-rep) m)
+     m))
+
+
+
+(defn alt-associativity [a b c]
+  (= (->> a (R/alt b) (R/alt c))
+     (R/alt (R/alt c b) a)))
+
+(defn alt-distributivity [a b f]
+  (= (->> a (R/alt b) (R/map f))
+     (->> a (R/map f) (R/alt (R/map f b)))))
+
+
+
+(defn plus-left-identity [x type-rep]
+  (= (R/alt x (R/zero type-rep))
+     x))
+
+(defn plus-right-identity [x type-rep]
+  (= (R/alt (R/zero type-rep) x)
+     x))
+
+(defn plus-annihilation [type-rep f]
+  (= (R/map f (R/zero type-rep))
+     (R/zero type-rep)))
+
+
+
+(defn extend-associativity [w g f]
+  (= (->> w (R/extend g) (R/extend f))
+     (R/extend (fn [_w] (f (R/extend g _w))) w)))

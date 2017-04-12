@@ -1,5 +1,5 @@
 (ns ramda.core
-  (:refer-clojure :exclude [map reduce concat])
+  (:refer-clojure :exclude [map reduce concat empty])
   (:require [ramda.curry :as curry-ns :include-macros true]
             [ramda.either :as either-ns]
             [ramda.maybe :as maybe-ns]
@@ -13,7 +13,10 @@
                either-ns [Either Left Right left right]
                maybe-ns [Maybe Just Nothing just nothing]
                identity-ns [Identity]
-               standard-fn [of chain-rec map ap reduce concat equals alt bimap extend promap traverse lte chain extract]
+               standard-fn [of chain-rec empty zero
+                            map ap reduce concat equals
+                            alt bimap extend promap
+                            traverse lte chain extract]
                multimethods [from to-maybe]
                builtin-patch [patch-collection]})
 

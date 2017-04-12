@@ -15,6 +15,11 @@
       (is (laws/setoid-transitivity R/nothing R/nothing R/nothing))
       (is (laws/setoid-transitivity (R/just 1) (R/just 1) (R/just 1)))))
 
+  (testing "Semigroup"
+    (testing "associativity"
+      (is (laws/semigroup-associativity R/nothing R/nothing R/nothing))
+      (is (laws/semigroup-associativity (R/just [1]) (R/just [2]) (R/just [3])))))
+
   (testing "Functor"
     (testing "identity"
       (is (laws/functor-identity R/nothing))
@@ -91,4 +96,39 @@
 
     (testing "composition"
       (is (laws/traversable-composition R/nothing R/Identity R/Maybe))
-      (is (laws/traversable-composition (R/just (R/Identity. (R/just 1))) R/Identity R/Maybe)))))
+      (is (laws/traversable-composition (R/just (R/Identity. (R/just 1))) R/Identity R/Maybe))))
+
+  (testing "Monoid"
+    (testing "left-identity"
+      (is (laws/monoid-left-identity R/nothing R/Maybe))
+      (is (laws/monoid-left-identity (R/just 1) R/Maybe)))
+
+    (testing "right-identity"
+      (is (laws/monoid-right-identity R/nothing R/Maybe))
+      (is (laws/monoid-right-identity (R/just 1) R/Maybe))))
+
+  (testing "Alt"
+    (testing "associativity"
+      (is (laws/alt-associativity R/nothing R/nothing R/nothing))
+      (is (laws/alt-associativity (R/just 1) (R/just 2) (R/just 3))))
+
+    (testing "distributivity"
+      (is (laws/alt-distributivity R/nothing R/nothing #(+ 1 %)))
+      (is (laws/alt-distributivity (R/just 1) (R/just 2) #(+ 1 %)))))
+
+  (testing "Plus"
+    (testing "left-identity"
+      (is (laws/plus-left-identity R/nothing R/Maybe))
+      (is (laws/plus-left-identity (R/just 1) R/Maybe)))
+
+    (testing "right-identity"
+      (is (laws/plus-right-identity R/nothing R/Maybe))
+      (is (laws/plus-right-identity (R/just 1) R/Maybe)))
+
+    (testing "annihilation"
+      (is (laws/plus-annihilation R/Maybe #(+ 1 %)))))
+
+  (testing "extend-associativity"
+    (testing "extend-associativity"
+      (is (laws/extend-associativity R/nothing #(+ 1 (.-value %)) #(* (.-value %) (.-value %))))
+      (is (laws/extend-associativity (R/just 2) #(+ 1 (.-value %)) #(* (.-value %) (.-value %)))))))
