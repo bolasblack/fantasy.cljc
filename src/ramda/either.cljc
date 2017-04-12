@@ -55,11 +55,29 @@
                (f (.-value this))
                this))
 
+ p/Foldable
+ (p/fl-reduce [this f x]
+              (if (right? this)
+                (f x (.-value this))
+                x))
+
  p/Traversable
  (p/fl-traverse [this type-rep f]
                 (if (right? this)
-                  (p/fl-map (f (.-value this)) Right.)
+                  (p/fl-map (f (.-value this)) #(Right. %))
                   (standard-fn/of type-rep this)))
+
+ p/Alt
+ (p/fl-alt [this that]
+           (if (right? this)
+             this
+             that))
+
+ p/Semigroup
+ (p/fl-concat [this that]
+              (if (left? this)
+                (if (left? that) (Left. (p/fl-concat (.-value this) (.-value that))) that)
+                (if (left? that) this (Right. (p/fl-concat (.-value this) (.-value that))))))
 
  p/Setoid
  (p/fl-equals [this a]

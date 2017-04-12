@@ -88,12 +88,6 @@
 
 
 
-(defn extend-associative [w g f]
-  (= (->> w (R/extend g) (R/extend f))
-     (R/extend (fn [_w] (f (R/extend g _w))) w)))
-
-
-
 (defn bifunctor-identity [a]
   (= (R/bimap identity identity a)
      a))

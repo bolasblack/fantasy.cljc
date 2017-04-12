@@ -71,18 +71,17 @@
     (testing "left-identity"
       (is (laws/monad-left-identity (R/left 1) #(+ 1 %) #(R/of R/Either %)))
       (is (laws/monad-left-identity (R/right 1) #(+ 1 %) #(R/of R/Either %))))
-
     (testing "right-identity"
       (is (laws/monad-right-identity (R/left 1) #(R/of R/Either %)))
       (is (laws/monad-right-identity (R/right 1) #(R/of R/Either %)))))
 
   (testing "Extend"
-    (testing "extend-associative"
-      (is (laws/extend-associative
+    (testing "associativity"
+      (is (laws/extend-associativity
            (R/left 1)
            #(R/left (R/map (fn [a] (+ a 2)) %))
            #(R/left (R/map (fn [a] (+ a 1)) %))))
-      (is (laws/extend-associative
+      (is (laws/extend-associativity
            (R/right 1)
            #(R/right (R/map (fn [a] (+ a 2)) %))
            #(R/right (R/map (fn [a] (+ a 1)) %))))))
@@ -93,4 +92,32 @@
       (is (laws/bifunctor-identity (R/right 1))))
     (testing "composition"
       (is (laws/bifunctor-composition (R/left 1) #(+ % 1) #(+ % 10) #(+ % 100) #(+ % 1000)))
-      (is (laws/bifunctor-composition (R/right 1) #(+ % 1) #(+ % 10) #(+ % 100) #(+ % 1000))))))
+      (is (laws/bifunctor-composition (R/right 1) #(+ % 1) #(+ % 10) #(+ % 100) #(+ % 1000)))))
+
+  (testing "Semigroup"
+    (testing "associativity"
+      (is (laws/semigroup-associativity (R/left [1]) (R/left [2]) (R/left [3])))
+      (is (laws/semigroup-associativity (R/right [1]) (R/right [2]) (R/right [3])))))
+
+  (testing "Alt"
+    (testing "associativity"
+      (is (laws/alt-associativity (R/left 1) (R/left 2) (R/left 3)))
+      (is (laws/alt-associativity (R/right 1) (R/right 2) (R/right 3))))
+    (testing "distributivity"
+      (is (laws/alt-distributivity (R/left 1) (R/left 2) #(+ 1 %)))
+      (is (laws/alt-distributivity (R/right 1) (R/right 2) #(+ 1 %)))))
+
+  (testing "Foldable"
+    (is (laws/foldable (R/left [1 2 3 4]) + 0))
+    (is (laws/foldable (R/right [1 2 3 4]) + 0)))
+
+  (testing "Traversable"
+    (testing "naturality"
+      (is (laws/traversable-naturality R/to-maybe (R/left (R/Identity. 1)) R/Identity R/Maybe))
+      (is (laws/traversable-naturality R/to-maybe (R/right (R/Identity. 1)) R/Identity R/Maybe)))
+    (testing "identity"
+      (is (laws/traversable-identity (R/left 1) R/Identity))
+      (is (laws/traversable-identity (R/right 1) R/Identity)))
+    (testing "composition"
+      (is (laws/traversable-composition (R/left (R/Identity. (R/left 1))) R/Identity R/Maybe))
+      (is (laws/traversable-composition (R/right (R/Identity. (R/right 1))) R/Identity R/Maybe)))))
