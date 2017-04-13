@@ -82,6 +82,12 @@
                 (= (type a) Nothing)
                 (u/equals this a)))
 
+ p/Comonad
+ (p/fl-extract [this]
+               (if (nothing? this)
+                 nil
+                 (.-value this)))
+
  p/Applicative
 
  p/Monad
@@ -102,11 +108,9 @@
 (defn just [value]
   (Just. value))
 
-(defmethod m/from Just [a b]
-  (.-value a))
-
-(defmethod m/from Nothing [a b]
-  b)
+(defn from-maybe [a b]
+  {:pre [(satisfies? Maybe a)]}
+  (if (just? a) a b))
 
 (defmethod standard-fn/of Maybe [type value]
   (just value))

@@ -83,6 +83,10 @@
  (p/fl-equals [this a]
               (u/equals this a))
 
+ p/Comonad
+ (p/fl-extract [this]
+   (.-value this))
+
  p/Applicative
 
  p/Monad
@@ -97,12 +101,6 @@
 
 (defn right [value]
   (Right. value))
-
-(defmethod m/from Left [a]
-  (.-value a))
-
-(defmethod m/from Right [a]
-  (.-value a))
 
 (defmethod standard-fn/of Either [type value]
   (right value))

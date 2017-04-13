@@ -120,4 +120,8 @@
       (is (laws/traversable-identity (R/right 1) R/Identity)))
     (testing "composition"
       (is (laws/traversable-composition (R/left (R/Identity. (R/left 1))) R/Identity R/Maybe))
-      (is (laws/traversable-composition (R/right (R/Identity. (R/right 1))) R/Identity R/Maybe)))))
+      (is (laws/traversable-composition (R/right (R/Identity. (R/right 1))) R/Identity R/Maybe))))
+
+  (testing "Comonad"
+    (is (= 1 (R/extract (R/left 1))))
+    (is (= 1 (R/extract (R/right 1))))))

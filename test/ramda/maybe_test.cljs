@@ -129,6 +129,10 @@
       (is (laws/plus-annihilation R/Maybe #(+ 1 %)))))
 
   (testing "extend-associativity"
-    (testing "extend-associativity"
+    (testing "associativity"
       (is (laws/extend-associativity R/nothing #(+ 1 (.-value %)) #(* (.-value %) (.-value %))))
-      (is (laws/extend-associativity (R/just 2) #(+ 1 (.-value %)) #(* (.-value %) (.-value %)))))))
+      (is (laws/extend-associativity (R/just 2) #(+ 1 (.-value %)) #(* (.-value %) (.-value %))))))
+
+  (testing "Comonad"
+    (is (= nil (R/extract R/nothing)))
+    (is (= 1 (R/extract (R/just 1))))))

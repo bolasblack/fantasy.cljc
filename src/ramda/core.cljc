@@ -11,13 +11,13 @@
 
 (u/pull-to-ns {curry-ns [defcurry curry __]
                either-ns [Either Left Right left right]
-               maybe-ns [Maybe Just Nothing just nothing]
+               maybe-ns [Maybe Just Nothing just nothing from-maybe]
                identity-ns [Identity]
                standard-fn [of chain-rec empty zero
                             map ap reduce concat equals
                             alt bimap extend promap
                             traverse lte chain extract]
-               multimethods [from to-maybe]
+               multimethods [to-maybe]
                builtin-patch [patch-collection]})
 
 (builtin-patch/patch-all)
