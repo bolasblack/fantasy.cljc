@@ -3,7 +3,8 @@
             [clojure.test :refer [run-all-tests run-tests]]
             [ramda.curry-test :as curry-test]
             [ramda.either-test :as either-test]
-            [ramda.maybe-test :as maybe-test]))
+            [ramda.maybe-test :as maybe-test]
+            [ramda.builtin-patch-test :as builtin-patch-test]))
 
 (nodejs/enable-util-print!)
 
