@@ -1,4 +1,4 @@
-(ns ramda.builtin-patch-test
+(ns ramda.builtin-patch.laws-test
   (:require [ramda.core :as R]
             [ramda.laws :as laws]
             [clojure.test :refer [deftest testing are is]]))

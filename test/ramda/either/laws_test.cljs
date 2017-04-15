@@ -1,4 +1,4 @@
-(ns ramda.either-test
+(ns ramda.either.laws-test
   (:require [ramda.core :as R]
             [ramda.laws :as laws]
             [clojure.test :refer [deftest testing are is]]))

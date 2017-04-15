@@ -1,4 +1,4 @@
-(ns ramda.maybe-test
+(ns ramda.maybe.laws-test
   (:require [ramda.core :as R]
             [ramda.laws :as laws]
             [clojure.test :refer [deftest testing are is]]))
