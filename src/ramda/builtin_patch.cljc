@@ -92,14 +92,81 @@
      :clj (do
             (patch-collection clojure.lang.APersistentSet #{}))))
 
+(defn patch-hash
+  ([type emptied]
+   (defmethod sf/zero type [type]
+     emptied)
+
+   (defmethod sf/empty type [type]
+     emptied)
+
+   (extend-type type
+     p/Setoid
+     (p/fl-equals [this that]
+       (= this that))
+
+     p/Semigroup
+     (p/fl-concat [this that]
+       (merge this that))
+
+     p/Functor
+     (p/fl-map [this f]
+       (into emptied (map (fn [[key value]]
+                            [key (f value)])
+                          this)))
+
+     p/Apply
+     (p/fl-ap [this that]
+       (into emptied (map (fn [[key value]]
+                            [key ((get that key identity) value)])
+                          this)))
+
+     p/Alt
+     (p/fl-alt [this that]
+       (p/fl-concat this that))
+
+     p/Foldable
+     (p/fl-reduce [this f x]
+       (reduce f x this))
+
+     p/Plus
+
+     p/Monoid))
+
+  ([]
+   #?(:cljs (do
+              (patch-hash PersistentArrayMap {})
+              (patch-hash PersistentHashMap {}))
+      :clj (do
+             (patch-hash clojure.lang.PersistentArrayMap {})
+             (patch-hash clojure.lang.PersistentHashMap {})))))
+
+(defn patch-string []
+  (defmethod sf/empty #?(:cljs js/String :clj java.lang.String) [type]
+    "")
+
+  (extend-type #?(:cljs js/String :clj java.lang.String)
+    p/Semigroup
+    (p/fl-concat [this a]
+      (str this a))
+
+    p/Monoid))
+
 (defn patch-number []
-  (extend-type #?(:cljs js/Number :clj Number)
+  (defmethod sf/zero #?(:cljs js/Number :clj java.lang.Number) [type]
+    0)
+
+  (extend-type #?(:cljs js/Number :clj java.lang.Number)
     p/Ord
     (p/fl-lte [this a]
-      (<= this a))))
+      (<= this a))
+
+    p/Plus))
 
 (defn patch-all []
   (patch-vector)
   (patch-list)
   (patch-set)
-  (patch-number))
+  (patch-hash)
+  (patch-number)
+  (patch-string))

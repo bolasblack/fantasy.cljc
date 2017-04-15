@@ -98,3 +98,47 @@
   (testing "Extend"
     (testing "associativity"
       (is (laws/extend-associativity [2] (fn [n] [(+ 1 (first n))]) (fn [n] [(* (first n) (first n))]))))))
+
+
+(deftest patch-hash
+  (testing "Setoid"
+    (testing "reflexivity"
+      (is (laws/setoid-reflexivity {:a 1})))
+    (testing "symmetry"
+      (is (laws/setoid-symmetry {:a 1} {:a 1})))
+    (testing "transitivity"
+      (is (laws/setoid-transitivity {:a 1} {:a 1} {:a 1}))))
+
+  (testing "Semigroup"
+    (testing "associativity"
+      (is (laws/semigroup-associativity {:a 1} {:a 2} {:a 3}))))
+
+  (testing "Functor"
+    (testing "identity"
+      (is (laws/functor-identity {:a 1})))
+    (testing "composition"
+      (is (laws/functor-composition {:a 1} #(+ % 1) #(+ % 100)))))
+
+  (testing "Apply"
+    (testing "composition"
+      (is (laws/apply-composition {:a 1 :b 2} {:a #(+ % 1) :b #(+ % 2)} {:a #(+ % 2) :b #(+ % 3)}))))
+
+  (testing "Foldable"
+    (is (laws/foldable {:a 1 :b 2 :c 3} (fn [memo [key value]] (assoc memo key (+ 1 value))) {})))
+
+  (testing "Monoid"
+    (testing "left-identity"
+      (is (laws/monoid-left-identity {:a 1} (type {}))))
+
+    (testing "right-identity"
+      (is (laws/monoid-right-identity {:a 1} (type {})))))
+
+  (testing "Plus"
+    (testing "left-identity"
+      (is (laws/plus-left-identity {:a 1} (type {}))))
+
+    (testing "right-identity"
+      (is (laws/plus-right-identity {:a 1} (type {}))))
+
+    (testing "annihilation"
+      (is (laws/plus-annihilation (type {}) #(+ 1 (last %)))))))
