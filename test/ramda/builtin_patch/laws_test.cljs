@@ -97,7 +97,9 @@
 
   (testing "Extend"
     (testing "associativity"
-      (is (laws/extend-associativity [2] (fn [n] [(+ 1 (first n))]) (fn [n] [(* (first n) (first n))]))))))
+      (is (laws/extend-associativity [2]
+                                     (fn [n] (+ 1 (first n)))
+                                     (fn [n] (* (first n) (first n))))))))
 
 
 (deftest patch-hash

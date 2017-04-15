@@ -3,7 +3,7 @@
             [ramda.standard-func :as sf]
             [ramda.utils :as u :include-macros true]))
 
-(defn patch-collection [type emptied]
+(defn patch-collection [type emptied & {:keys [wrapper] :or {wrapper identity}}]
   (defmethod sf/empty type [type]
     emptied)
 
@@ -33,7 +33,7 @@
 
     p/Functor
     (p/fl-map [this f]
-      (map f this))
+      (wrapper (map f this)))
 
     p/Foldable
     (p/fl-reduce [this f x]
@@ -41,27 +41,27 @@
 
     p/Semigroup
     (p/fl-concat [this a]
-      (concat this a))
+      (wrapper (concat this a)))
 
     p/Alt
     (p/fl-alt [this a]
-      (concat this a))
+      (wrapper (concat this a)))
 
     p/Apply
     (p/fl-ap [this a]
-      (reduce
-       (fn [acc f]
-         (p/fl-concat acc (p/fl-map this f)))
-       (empty this)
-       a))
+      (wrapper (reduce
+                (fn [acc f]
+                  (p/fl-concat acc (p/fl-map this f)))
+                (empty this)
+                a)))
 
     p/Chain
     (p/fl-chain [this f]
-      (mapcat f this))
+      (wrapper (mapcat f this)))
 
     p/Extend
     (p/fl-extend [this f]
-      (concat (empty this) (f this)))
+      (wrapper (conj (empty this) (f this))))
 
     p/Applicative
 
@@ -87,10 +87,10 @@
 
 (defn patch-set []
   #?(:cljs (do
-             (patch-collection PersistentHashSet #{})
-             (patch-collection PersistentTreeSet #{}))
+             (patch-collection PersistentHashSet #{} :wrapper set)
+             (patch-collection PersistentTreeSet #{} :wrapper set))
      :clj (do
-            (patch-collection clojure.lang.APersistentSet #{}))))
+            (patch-collection clojure.lang.APersistentSet #{} :wrapper set))))
 
 (defn patch-hash
   ([type emptied]
@@ -143,6 +143,9 @@
 
 (defn patch-string []
   (defmethod sf/empty #?(:cljs js/String :clj java.lang.String) [type]
+    "")
+
+  (defmethod sf/zero #?(:cljs js/String :clj java.lang.String) [type]
     "")
 
   (extend-type #?(:cljs js/String :clj java.lang.String)
