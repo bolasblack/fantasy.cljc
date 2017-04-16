@@ -2,6 +2,7 @@
   (:require [cljs.nodejs :as nodejs]
             [clojure.test :refer [run-all-tests run-tests]]
             [ramda.curry-test :as curry-test]
+            [ramda.either.test :as either-test]
             [ramda.either.laws-test :as either-laws-test]
             [ramda.maybe.laws-test :as maybe-laws-test]
             [ramda.builtin-patch.test :as builtin-patch-test]

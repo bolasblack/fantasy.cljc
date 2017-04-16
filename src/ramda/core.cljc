@@ -10,8 +10,8 @@
             [ramda.builtin-patch :as builtin-patch]))
 
 (u/pull-to-ns {curry-ns [defcurry curry __]
-               either-ns [Either Left Right left right]
-               maybe-ns [Maybe Just Nothing just nothing from-maybe]
+               either-ns [Either Left Right left right left? right?]
+               maybe-ns [Maybe Just Nothing just nothing just? nothing? from-maybe]
                identity-ns [Identity]
                standard-fn [of chain-rec empty zero
                             map ap reduce concat equals
