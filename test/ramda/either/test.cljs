@@ -21,11 +21,10 @@
 
   (testing "equals"
     (is (R/equals (R/left 1) (R/left 1)))
-    (is (not (R/equals (R/left 1) (R/right 1))))
     (is (not (R/equals (R/left 1) (R/left 2))))
     (is (R/equals (R/right 1) (R/right 1)))
-    (is (not (R/equals (R/right 1) (R/left 1))))
-    (is (not (R/equals (R/right 1) (R/right 2)))))
+    (is (not (R/equals (R/right 1) (R/right 2))))
+    (is (not (R/equals (R/left 1) (R/right 1)))))
 
   (testing "map"
     (are [x y] (= x y)

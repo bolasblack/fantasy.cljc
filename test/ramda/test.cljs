@@ -4,6 +4,7 @@
             [ramda.curry-test :as curry-test]
             [ramda.either.test :as either-test]
             [ramda.either.laws-test :as either-laws-test]
+            [ramda.maybe.test :as maybe-test]
             [ramda.maybe.laws-test :as maybe-laws-test]
             [ramda.builtin-patch.test :as builtin-patch-test]
             [ramda.builtin-patch.laws-test :as builtin-patch-laws-test]))

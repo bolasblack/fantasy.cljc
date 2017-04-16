@@ -14,9 +14,6 @@
   (nothing? [this] false))
 
 (deftype Nothing []
-  #?(:cljs
-     IFn (-invoke [this] this))
-
   Maybe
   (just? [this] false)
   (nothing? [this] true))
@@ -110,7 +107,7 @@
 
 (defn from-maybe [a b]
   {:pre [(satisfies? Maybe a)]}
-  (if (just? a) a b))
+  (if (just? a) (.-value a) b))
 
 (defmethod standard-fn/of Maybe [type value]
   (just value))
