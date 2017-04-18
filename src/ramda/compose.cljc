@@ -11,15 +11,16 @@
          (u/equals this# other#))
 
        p/Applicative
+
        p/Apply
-       (p/fl-ap [this# f#]
-         (new compose# (p/fl-ap (.-value this#)
-                                (p/fl-map (.-value f#)
-                                          (fn [u#] (fn [y#] (p/fl-ap y# u#)))))))
+       (p/ap [this# f#]
+         (new compose# (p/ap (.-value this#)
+                             (p/map (.-value f#)
+                                    (fn [u#] (fn [y#] (p/ap y# u#)))))))
        p/Functor
-       (p/fl-map [this# f#]
-         (new compose# (p/fl-map (.-value this#)
-                                 (fn [y#] (p/fl-map y# f#))))))
+       (p/map [this# f#]
+         (new compose# (p/map (.-value this#)
+                              (fn [y#] (p/map y# f#))))))
 
      (u/defpr [compose#] [this#]
        (str "((Compose. " ~(name F) " " ~(name G) ") " (.-value this#) ")"))

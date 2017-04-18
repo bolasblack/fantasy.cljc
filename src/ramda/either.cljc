@@ -22,69 +22,69 @@
  [Left Right]
 
  IEquiv
- (-equiv [this a]
-         (p/fl-equals this a))
+ (-equiv [this that]
+         (p/equals this that))
 
  p/Functor
- (p/fl-map [this f]
-           (if (right? this)
-             (Right. (f (.-value this)))
-             this))
+ (p/map [this f]
+        (if (right? this)
+          (Right. (f (.-value this)))
+          this))
 
  p/Bifunctor
- (p/fl-bimap [this f1 f2]
-             (if (right? this)
-               (Right. (f2 (.-value this)))
-               (Left. (f1 (.-value this)))))
+ (p/bimap [this f1 f2]
+          (if (right? this)
+            (Right. (f2 (.-value this)))
+            (Left. (f1 (.-value this)))))
 
  p/Apply
- (p/fl-ap [this that]
-          (if (right? that)
-            (p/fl-map this (.-value that))
-            that))
+ (p/ap [this that]
+       (if (right? that)
+         (p/map this (.-value that))
+         that))
 
  p/Extend
- (p/fl-extend [this f]
-              (if (right? this)
-                (Right. (f this))
-                this))
+ (p/extend [this f]
+           (if (right? this)
+             (Right. (f this))
+             this))
 
  p/Chain
- (p/fl-chain [this f]
-             (if (right? this)
-               (f (.-value this))
-               this))
+ (p/chain [this f]
+          (if (right? this)
+            (f (.-value this))
+            this))
 
  p/Foldable
- (p/fl-reduce [this f x]
-              (if (right? this)
-                (f x (.-value this))
-                x))
+ (p/reduce [this f x]
+           (if (right? this)
+             (f x (.-value this))
+             x))
 
  p/Traversable
- (p/fl-traverse [this type-rep f]
-                (if (right? this)
-                  (p/fl-map (f (.-value this)) #(Right. %))
-                  (standard-fn/of type-rep this)))
+ (p/traverse [this type-rep f]
+             (if (right? this)
+               (p/map (f (.-value this)) #(Right. %))
+               (standard-fn/of type-rep this)))
 
  p/Alt
- (p/fl-alt [this that]
-           (if (right? this)
-             this
-             that))
+ (p/alt [this that]
+        (if (right? this)
+          this
+          that))
 
  p/Semigroup
- (p/fl-concat [this that]
-              (if (left? this)
-                (if (left? that) (Left. (p/fl-concat (.-value this) (.-value that))) that)
-                (if (left? that) this (Right. (p/fl-concat (.-value this) (.-value that))))))
+ (p/concat [this that]
+           (if (left? this)
+             (if (left? that) (Left. (p/concat (.-value this) (.-value that))) that)
+             (if (left? that) this (Right. (p/concat (.-value this) (.-value that))))))
 
  p/Setoid
- (p/fl-equals [this a]
-              (u/equals this a))
+ (p/equals [this that]
+           (u/equals this that))
 
  p/Comonad
- (p/fl-extract [this]
+ (p/extract [this]
    (.-value this))
 
  p/Applicative

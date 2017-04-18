@@ -7,45 +7,45 @@
 
 (deftype Identity [value]
   IEquiv
-  (-equiv [this a]
-    (u/equals this a))
+  (-equiv [this that]
+    (u/equals this that))
 
   p/Functor
-  (p/fl-map [this f]
+  (p/map [this f]
     (Identity. (f (.-value this))))
 
   p/Foldable
-  (p/fl-reduce [this f x]
+  (p/reduce [this f x]
     (f x (.-value this)))
 
   p/Semigroup
-  (p/fl-concat [this a]
-    (Identity. (p/fl-concat (.-value this) (.-value a))))
+  (p/concat [this that]
+    (Identity. (p/concat (.-value this) (.-value that))))
 
   p/Setoid
-  (p/fl-equals [this a]
-    (= (.-value this) (.-value a)))
+  (p/equals [this that]
+    (= (.-value this) (.-value that)))
 
   p/Apply
-  (p/fl-ap [this a]
-    (p/fl-map this (.-value a)))
+  (p/ap [this that]
+    (p/map this (.-value that)))
 
   p/Extend
-  (p/fl-extend [this f]
+  (p/extend [this f]
     (Identity. (f this)))
 
   p/Traversable
-  (p/fl-traverse [this type-rep f]
-    (p/fl-map (f (.-value this)) #(Identity. %)))
+  (p/traverse [this type-rep f]
+    (p/map (f (.-value this)) #(Identity. %)))
 
   p/Applicative
 
   p/Chain
-  (p/fl-chain [this f]
+  (p/chain [this f]
     (f (.-value this)))
 
   p/Comonad
-  (p/fl-extract [this]
+  (p/extract [this]
     (.-value this))
 
   p/Monad)

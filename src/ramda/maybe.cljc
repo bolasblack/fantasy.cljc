@@ -22,68 +22,68 @@
  [Just Nothing]
 
  IEquiv
- (-equiv [this a]
-         (p/fl-equals this a))
+ (-equiv [this that]
+         (p/equals this that))
 
  p/Alt
- (p/fl-alt [this a]
-   (if (just? this) this a))
+ (p/alt [this that]
+        (if (just? this) this that))
 
  p/Functor
- (p/fl-map [this f]
-           (if (just? this)
-             (Just. (f (.-value this)))
-             this))
+ (p/map [this f]
+        (if (just? this)
+          (Just. (f (.-value this)))
+          this))
 
  p/Foldable
- (p/fl-reduce [this f x]
-              (if (just? this)
-                (f x (.-value this))
-                x))
+ (p/reduce [this f x]
+           (if (just? this)
+             (f x (.-value this))
+             x))
 
  p/Apply
- (p/fl-ap [this a]
-          (if (just? a)
-            (p/fl-map this (.-value a))
-            a))
+ (p/ap [this that]
+       (if (just? that)
+         (p/map this (.-value that))
+         that))
 
  p/Chain
- (p/fl-chain [this f]
-             (if (just? this)
-               (f (.-value this))
-               this))
+ (p/chain [this f]
+          (if (just? this)
+            (f (.-value this))
+            this))
 
  p/Traversable
- (p/fl-traverse [this type-rep f]
-                (if (just? this)
-                  (p/fl-map (f (.-value this)) #(Just. %))
-                  (standard-fn/of type-rep this)))
+ (p/traverse [this type-rep f]
+             (if (just? this)
+               (p/map (f (.-value this)) #(Just. %))
+               (standard-fn/of type-rep this)))
 
  p/Extend
- (p/fl-extend [this f]
-              (if (just? this)
-                (Just. (f this))
-                this))
+ (p/extend [this f]
+           (if (just? this)
+             (Just. (f this))
+             this))
 
  p/Semigroup
- (p/fl-concat [this that]
-              (if (nothing? this)
-                that
-                (if (nothing? that)
-                  this
-                  (Just. (p/fl-concat (.-value this) (.-value that))))))
+ (p/concat [this that]
+           (if (nothing? this)
+             that
+             (if (nothing? that)
+               this
+               (Just. (p/concat (.-value this) (.-value that))))))
 
  p/Setoid
- (p/fl-equals [this a]
-              (if (nothing? this)
-                (= (type a) Nothing)
-                (u/equals this a)))
+ (p/equals [this that]
+           (if (nothing? this)
+             (= (type that) Nothing)
+             (u/equals this that)))
 
  p/Comonad
- (p/fl-extract [this]
-               (if (nothing? this)
-                 nil
-                 (.-value this)))
+ (p/extract [this]
+            (if (nothing? this)
+              nil
+              (.-value this)))
 
  p/Applicative
 

@@ -28,39 +28,39 @@
 
   (extend-type type
     p/Setoid
-    (p/fl-equals [this that]
+    (p/equals [this that]
       (= this that))
 
     p/Functor
-    (p/fl-map [this f]
+    (p/map [this f]
       (wrapper (map f this)))
 
     p/Foldable
-    (p/fl-reduce [this f x]
+    (p/reduce [this f x]
       (reduce f x this))
 
     p/Semigroup
-    (p/fl-concat [this a]
-      (wrapper (concat this a)))
+    (p/concat [this that]
+      (wrapper (concat this that)))
 
     p/Alt
-    (p/fl-alt [this a]
-      (wrapper (concat this a)))
+    (p/alt [this that]
+      (wrapper (concat this that)))
 
     p/Apply
-    (p/fl-ap [this a]
+    (p/ap [this that]
       (wrapper (reduce
                 (fn [acc f]
-                  (p/fl-concat acc (p/fl-map this f)))
+                  (p/concat acc (p/map this f)))
                 (empty this)
-                a)))
+                that)))
 
     p/Chain
-    (p/fl-chain [this f]
+    (p/chain [this f]
       (wrapper (mapcat f this)))
 
     p/Extend
-    (p/fl-extend [this f]
+    (p/extend [this f]
       (wrapper (conj (empty this) (f this))))
 
     p/Applicative
@@ -102,31 +102,31 @@
 
    (extend-type type
      p/Setoid
-     (p/fl-equals [this that]
+     (p/equals [this that]
        (= this that))
 
      p/Semigroup
-     (p/fl-concat [this that]
+     (p/concat [this that]
        (merge this that))
 
      p/Functor
-     (p/fl-map [this f]
+     (p/map [this f]
        (into emptied (map (fn [[key value]]
                             [key (f value)])
                           this)))
 
      p/Apply
-     (p/fl-ap [this that]
+     (p/ap [this that]
        (into emptied (map (fn [[key value]]
                             [key ((get that key identity) value)])
                           this)))
 
      p/Alt
-     (p/fl-alt [this that]
-       (p/fl-concat this that))
+     (p/alt [this that]
+       (p/concat this that))
 
      p/Foldable
-     (p/fl-reduce [this f x]
+     (p/reduce [this f x]
        (reduce f x this))
 
      p/Plus
@@ -150,8 +150,8 @@
 
   (extend-type #?(:cljs js/String :clj java.lang.String)
     p/Semigroup
-    (p/fl-concat [this a]
-      (str this a))
+    (p/concat [this that]
+      (str this that))
 
     p/Monoid))
 
@@ -161,8 +161,8 @@
 
   (extend-type #?(:cljs js/Number :clj java.lang.Number)
     p/Ord
-    (p/fl-lte [this a]
-      (<= this a))
+    (p/lte [this that]
+      (<= this that))
 
     p/Plus))
 
