@@ -18,7 +18,7 @@
       :version +version+
       :description +description+
       :license {"MIT" "http://opensource.org/licenses/MIT"}
-      :scm {:url "https://github.com/bolasblack/ramda.clj"}})
+      :scm {:url "https://github.com/bolasblack/ramda.cljc"}})
 
 (deftask build-cljs []
   (cljs :compiler-options {:target :nodejs}))
