@@ -1,13 +1,13 @@
-(ns ramda.core
+(ns fantasy.core
   (:refer-clojure :exclude [map reduce concat empty])
-  (:require [ramda.curry :as curry-ns :include-macros true]
-            [ramda.either :as either-ns]
-            [ramda.maybe :as maybe-ns]
-            [ramda.identity :as identity-ns]
-            [ramda.utils :as u :include-macros true]
-            [ramda.standard-func :as standard-fn]
-            [ramda.multimethods :as multimethods]
-            [ramda.builtin-patch :as builtin-patch]))
+  (:require [fantasy.curry :as curry-ns :include-macros true]
+            [fantasy.either :as either-ns]
+            [fantasy.maybe :as maybe-ns]
+            [fantasy.identity :as identity-ns]
+            [fantasy.utils :as u :include-macros true]
+            [fantasy.standard-func :as standard-fn]
+            [fantasy.multimethods :as multimethods]
+            [fantasy.builtin-patch :as builtin-patch]))
 
 (u/pull-to-ns {curry-ns [defcurry curry __]
                either-ns [Either Left Right left right left? right?]

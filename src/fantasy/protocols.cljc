@@ -1,4 +1,4 @@
-(ns ramda.protocols
+(ns fantasy.protocols
   (:refer-clojure :exclude [map reduce concat empty]))
 
 (defprotocol Functor

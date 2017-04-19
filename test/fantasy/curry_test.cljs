@@ -1,10 +1,10 @@
-(ns ramda.curry-test
-  (:require [ramda.curry :as R]
+(ns fantasy.curry-test
+  (:require [fantasy.curry :as f]
             [clojure.test :refer [deftest are is]]))
 
 (defn test-curry-fn [curry-fn]
   (let [f (curry-fn (fn [a b c] [a b c]))
-        _ R/__]
+        _ f/__]
     (is (= [1 2 3] ((f) 1 2 3)))
     (is (= [1 2 3] ((f 1) 2 3)))
     (is (= [1 2 3] ((f 1 2) 3)))
@@ -30,10 +30,10 @@
     (is (= [1 2 3] ((((((f _ _ _) 1 _ _) _ _) 2 _) _) 3)))))
 
 (deftest curry
-  (test-curry-fn R/curry)
-  (is (= [4 5 6] ((R/curry (fn [] [4 5 6])) 1)))
+  (test-curry-fn f/curry)
+  (is (= [4 5 6] ((f/curry (fn [] [4 5 6])) 1)))
   (is (thrown-with-msg? js/Error #"curry called with multiple arglist function, use \(curry arity f\) instead"
-                        (R/curry (fn ([a] [a]) ([a b] [a b]))))))
+                        (f/curry (fn ([a] [a]) ([a b] [a b]))))))
 
 (deftest curry-n
-  (test-curry-fn (fn [f] (R/curry-n (R/arity f) [] f))))
+  (test-curry-fn (fn [f] (f/curry-n (f/arity f) [] f))))

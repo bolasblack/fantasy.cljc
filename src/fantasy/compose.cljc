@@ -1,7 +1,7 @@
-(ns ramda.compose
-  (:require [ramda.protocols :as p]
-            [ramda.standard-func :as sf]
-            [ramda.utils :as u :include-macros true]))
+(ns fantasy.compose
+  (:require [fantasy.protocols :as p]
+            [fantasy.standard-func :as sf]
+            [fantasy.utils :as u :include-macros true]))
 
 (defmacro defcompose [F G]
   `(do

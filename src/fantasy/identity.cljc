@@ -1,9 +1,9 @@
-(ns ramda.identity
-  (:require [ramda.protocols :as p]
-            [ramda.standard-func :as standard-fn]
-            [ramda.multimethods :as m]
-            [ramda.maybe :as maybe-ns]
-            [ramda.utils :as u :include-macros true :refer-macros [defpr]]))
+(ns fantasy.identity
+  (:require [fantasy.protocols :as p]
+            [fantasy.standard-func :as standard-fn]
+            [fantasy.multimethods :as m]
+            [fantasy.maybe :as maybe-ns]
+            [fantasy.utils :as u :include-macros true :refer-macros [defpr]]))
 
 (deftype Identity [value]
   IEquiv

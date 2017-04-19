@@ -1,7 +1,7 @@
-(ns ramda.builtin-patch
-  (:require [ramda.protocols :as p]
-            [ramda.standard-func :as sf]
-            [ramda.utils :as u :include-macros true]))
+(ns fantasy.builtin-patch
+  (:require [fantasy.protocols :as p]
+            [fantasy.standard-func :as sf]
+            [fantasy.utils :as u :include-macros true]))
 
 (defn patch-collection [type emptied & {:keys [wrapper] :or {wrapper identity}}]
   (defmethod sf/empty type [type]

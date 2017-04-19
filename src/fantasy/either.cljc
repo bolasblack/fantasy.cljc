@@ -1,8 +1,8 @@
-(ns ramda.either
-  (:require [ramda.protocols :as p]
-            [ramda.standard-func :as standard-fn]
-            [ramda.multimethods :as m]
-            [ramda.utils :as u :include-macros true :refer-macros [defpr extend-types]]))
+(ns fantasy.either
+  (:require [fantasy.protocols :as p]
+            [fantasy.standard-func :as standard-fn]
+            [fantasy.multimethods :as m]
+            [fantasy.utils :as u :include-macros true :refer-macros [defpr extend-types]]))
 
 (defprotocol Either
   (left? [this])

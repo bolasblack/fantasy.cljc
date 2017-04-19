@@ -1,8 +1,8 @@
-(ns ramda.standard-func
+(ns fantasy.standard-func
   (:refer-clojure :exclude [map reduce concat empty])
-  (:require [ramda.curry :as curry-ns :include-macros true :refer-macros [defcurry]]
-            [ramda.utils :as u]
-            [ramda.protocols :as p]))
+  (:require [fantasy.curry :as curry-ns :include-macros true :refer-macros [defcurry]]
+            [fantasy.utils :as u]
+            [fantasy.protocols :as p]))
 
 (defmulti of identity)
 

@@ -1,4 +1,4 @@
-(def +project+ 'org.clojars.c4605/ramda)
+(def +project+ 'org.clojars.c4605/fantasy)
 (def +version+ "0.1.0")
 (def +description+ "")
 
@@ -18,7 +18,7 @@
       :version +version+
       :description +description+
       :license {"MIT" "http://opensource.org/licenses/MIT"}
-      :scm {:url "https://github.com/bolasblack/ramda.cljc"}})
+      :scm {:url "https://github.com/bolasblack/fantasy.cljc"}})
 
 (deftask build-cljs []
   (cljs :compiler-options {:target :nodejs}))

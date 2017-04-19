@@ -1,6 +1,6 @@
-(ns ramda.builtin-patch.laws-test
-  (:require [ramda.core :as R]
-            [ramda.laws :as laws]
+(ns fantasy.builtin-patch.laws-test
+  (:require [fantasy.core :as f]
+            [fantasy.laws :as laws]
             [clojure.test :refer [deftest testing are is]]))
 
 (deftest patch-collection
@@ -28,11 +28,11 @@
 
   (testing "Applicative"
     (testing "identity"
-      (is (laws/applicative-identity [1] #(R/of (type []) %))))
+      (is (laws/applicative-identity [1] #(f/of (type []) %))))
     (testing "homomorphism"
-      (is (laws/applicative-homomorphism [1] #(+ % 1) #(R/of (type []) %))))
+      (is (laws/applicative-homomorphism [1] #(+ % 1) #(f/of (type []) %))))
     (testing "interchange"
-      (is (laws/applicative-interchange 2 [#(+ % 1)] #(R/of (type []) %)))))
+      (is (laws/applicative-interchange 2 [#(+ % 1)] #(f/of (type []) %)))))
 
   (testing "Chain"
     (testing "associativity"
@@ -45,31 +45,31 @@
     (testing "equivalence"
       (let [predicate #(> (count %) 5)
             initial [1]
-            done #(R/of R/Maybe %)
-            next #(R/of R/Maybe (concat % [1]))]
-        (is (laws/chain-rec-equivalence #(R/chain-rec R/Maybe %1 %2) predicate done next initial))))
+            done #(f/of f/Maybe %)
+            next #(f/of f/Maybe (concat % [1]))]
+        (is (laws/chain-rec-equivalence #(f/chain-rec f/Maybe %1 %2) predicate done next initial))))
 
     (testing "stacksafe"
-      (is (laws/chain-rec-stacksafe #(R/chain-rec R/Maybe %1 %2) #(R/of R/Maybe %))))
+      (is (laws/chain-rec-stacksafe #(f/chain-rec f/Maybe %1 %2) #(f/of f/Maybe %))))
 
     (testing "responds to failure immediately"
-      (is (= (R/chain-rec R/Maybe (fn [] R/nothing) 100)
-             R/nothing)))
+      (is (= (f/chain-rec f/Maybe (fn [] f/nothing) 100)
+             f/nothing)))
 
     (testing "responds to failure on next step"
-      (is (= (R/chain-rec
-              R/Maybe
+      (is (= (f/chain-rec
+              f/Maybe
               (fn [next done n]
-                (if (= n 0) R/nothing (R/just (next (- n 1)))))
+                (if (= n 0) f/nothing (f/just (next (- n 1)))))
               100)
-             R/nothing))))
+             f/nothing))))
 
   (testing "Monad"
     (testing "left-identity"
-      (is (laws/monad-left-identity [1] #(R/of (type []) (+ 1 %)) #(R/of (type []) %))))
+      (is (laws/monad-left-identity [1] #(f/of (type []) (+ 1 %)) #(f/of (type []) %))))
 
     (testing "right-identity"
-      (is (laws/monad-right-identity [1] #(R/of (type []) %)))))
+      (is (laws/monad-right-identity [1] #(f/of (type []) %)))))
 
   (testing "Monoid"
     (testing "left-identity"

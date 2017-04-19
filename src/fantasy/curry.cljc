@@ -1,5 +1,5 @@
-(ns ramda.curry
-  (:require [ramda.utils :as u]))
+(ns fantasy.curry
+  (:require [fantasy.utils :as u]))
 
 (def __ "@@ramda/placeholder")
 

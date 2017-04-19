@@ -1,4 +1,4 @@
-(ns ramda.utils)
+(ns fantasy.utils)
 
 (defmacro pull-to-ns [ns-map]
   `(do ~@(for [[ns vlist] (into [] ns-map)
