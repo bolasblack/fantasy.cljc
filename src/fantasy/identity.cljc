@@ -1,14 +1,13 @@
 (ns fantasy.identity
   (:require [fantasy.protocols :as p]
             [fantasy.standard-func :as standard-fn]
-            [fantasy.multimethods :as m]
+            [fantasy.funcs :as funcs]
             [fantasy.maybe :as maybe-ns]
-            [fantasy.utils :as u :include-macros true :refer-macros [defpr]]))
+            [fantasy.utils :as u :refer [defpr] :include-macros true :refer-macros [defpr]]))
 
 (deftype Identity [value]
-  IEquiv
-  (-equiv [this that]
-    (u/equals this that))
+  #?@(:cljs [IEquiv (-equiv [this that] (p/-equals this that))]
+      :clj [Object (equals [this that] (p/-equals this that))])
 
   p/Functor
   (p/map [this f]
@@ -23,7 +22,7 @@
     (Identity. (p/concat (.-value this) (.-value that))))
 
   p/Setoid
-  (p/equals [this that]
+  (p/-equals [this that]
     (= (.-value this) (.-value that)))
 
   p/Apply
@@ -53,7 +52,7 @@
 (defpr [Identity] [this]
   (str "(Identity. " (.-value this) ")"))
 
-(defmethod m/to-maybe Identity [a]
+(defmethod funcs/to-maybe Identity [a]
   (if (nil? (.-value a))
     maybe-ns/nothing
     (maybe-ns/just (.-value a))))

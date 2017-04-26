@@ -1,8 +1,7 @@
 (ns fantasy.either
   (:require [fantasy.protocols :as p]
             [fantasy.standard-func :as standard-fn]
-            [fantasy.multimethods :as m]
-            [fantasy.utils :as u :include-macros true :refer-macros [defpr extend-types]]))
+            [fantasy.utils :as u :refer [defpr extend-types] :include-macros true :refer-macros [defpr extend-types]]))
 
 (defprotocol Either
   (left? [this])
@@ -11,19 +10,21 @@
 (deftype Left [value]
   Either
   (left? [this] true)
-  (right? [this] false))
+  (right? [this] false)
+
+  #?@(:clj [Object (equals [this that] (p/-equals this that))]))
 
 (deftype Right [value]
   Either
   (left? [this] false)
-  (right? [this] true))
+  (right? [this] true)
+
+  #?@(:clj [Object (equals [this that] (p/-equals this that))]))
 
 (extend-types
  [Left Right]
 
- IEquiv
- (-equiv [this that]
-         (p/equals this that))
+ #?@(:cljs [IEquiv (-equiv [this that] (p/-equals this that))])
 
  p/Functor
  (p/map [this f]
@@ -45,9 +46,9 @@
 
  p/Extend
  (p/extend [this f]
-           (if (right? this)
-             (Right. (f this))
-             this))
+   (if (right? this)
+     (Right. (f this))
+     this))
 
  p/Chain
  (p/chain [this f]
@@ -80,12 +81,12 @@
              (if (left? that) this (Right. (p/concat (.-value this) (.-value that))))))
 
  p/Setoid
- (p/equals [this that]
-           (u/equals this that))
+ (p/-equals [this that]
+            (u/equals this that))
 
  p/Comonad
  (p/extract [this]
-   (.-value this))
+            (.-value this))
 
  p/Applicative
 

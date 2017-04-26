@@ -1,6 +1,7 @@
 (ns fantasy.curry-test
   (:require [fantasy.curry :as f]
-            [clojure.test :refer [deftest are is]]))
+            [fantasy.utils :as u :include-macros true]
+            [clojure.test :refer [deftest is]]))
 
 (defn test-curry-fn [curry-fn]
   (let [f (curry-fn (fn [a b c] [a b c]))
@@ -31,9 +32,17 @@
 
 (deftest curry
   (test-curry-fn f/curry)
-  (is (= [4 5 6] ((f/curry (fn [] [4 5 6])) 1)))
-  (is (thrown-with-msg? js/Error #"curry called with multiple arglist function, use \(curry arity f\) instead"
-                        (f/curry (fn ([a] [a]) ([a b] [a b]))))))
+  (is (= [4 5 6] ((f/curry (fn [a] [4 5 6])) 1)))
+  (u/if-cljs
+   (is (thrown-with-msg? js/Error
+                         (js/RegExp. "curry called with multiple arglist function [^]+, use \\(curry arity f\\) instead")
+                         (f/curry (fn ([a] [a]) ([a b] [a b])))))
+   (is (thrown-with-msg? RuntimeException
+                         #"curry called with multiple arglist function .+, use \(curry arity f\) instead"
+                         (f/curry (fn ([a] [a]) ([a b] [a b])))))))
 
 (deftest curry-n
-  (test-curry-fn (fn [f] (f/curry-n (f/arity f) [] f))))
+  #?(:cljs (test-curry-fn (fn [f] (f/curry-n (f/arity f) [] f)))
+     ;; the way access private var learn from
+     ;;   http://dev.clojure.org/display/community/Library+Coding+Standards
+     :clj (test-curry-fn (fn [f] (@#'f/curry-n (@#'f/arity f) [] f)))))

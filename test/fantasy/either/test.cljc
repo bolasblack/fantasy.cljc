@@ -1,12 +1,15 @@
 (ns fantasy.either.test
   (:require [fantasy.core :as f]
-            [clojure.test :refer [deftest testing are is]]))
+            [clojure.test :refer [deftest testing are is]])
+  (:import #?(:clj [fantasy.either Left Right])))
 
 (deftest Either
   (testing "helper methods"
     (are [x y] (= x y)
-      (f/left 1) (f/Left. 1)
-      (f/right 1) (f/Right. 1)))
+      #?@(:cljs [(f/left 1) (f/Left. 1)
+                 (f/right 1) (f/Right. 1)]
+          :clj [(f/left 1) (Left. 1)
+                (f/right 1) (Right. 1)])))
 
   (testing "left?"
     (is (f/left? (f/left 1)))

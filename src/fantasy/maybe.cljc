@@ -1,8 +1,7 @@
 (ns fantasy.maybe
   (:require [fantasy.protocols :as p]
             [fantasy.standard-func :as standard-fn]
-            [fantasy.multimethods :as m]
-            [fantasy.utils :as u :include-macros true :refer-macros [defpr extend-types]]))
+            [fantasy.utils :as u :refer [defpr extend-types] :include-macros true :refer-macros [defpr extend-types]]))
 
 (defprotocol Maybe
   (just? [this])
@@ -11,19 +10,21 @@
 (deftype Just [value]
   Maybe
   (just? [this] true)
-  (nothing? [this] false))
+  (nothing? [this] false)
+
+  #?@(:clj [Object (equals [this that] (p/-equals this that))]))
 
 (deftype Nothing []
   Maybe
   (just? [this] false)
-  (nothing? [this] true))
+  (nothing? [this] true)
+
+  #?@(:clj [Object (equals [this that] (p/-equals this that))]))
 
 (extend-types
  [Just Nothing]
 
- IEquiv
- (-equiv [this that]
-         (p/equals this that))
+ #?@(:cljs [IEquiv (-equiv [this that] (p/-equals this that))])
 
  p/Alt
  (p/alt [this that]
@@ -74,9 +75,9 @@
                (Just. (p/concat (.-value this) (.-value that))))))
 
  p/Setoid
- (p/equals [this that]
+ (p/-equals [this that]
            (if (nothing? this)
-             (= (type that) Nothing)
+             (nothing? that)
              (u/equals this that)))
 
  p/Comonad

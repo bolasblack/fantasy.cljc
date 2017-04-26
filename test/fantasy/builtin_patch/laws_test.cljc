@@ -1,7 +1,7 @@
 (ns fantasy.builtin-patch.laws-test
   (:require [fantasy.core :as f]
             [fantasy.laws :as laws]
-            [clojure.test :refer [deftest testing are is]]))
+            [clojure.test :refer [deftest testing is]]))
 
 (deftest patch-collection
   (testing "Setoid"
@@ -30,7 +30,7 @@
     (testing "identity"
       (is (laws/applicative-identity [1] #(f/of (type []) %))))
     (testing "homomorphism"
-      (is (laws/applicative-homomorphism [1] #(+ % 1) #(f/of (type []) %))))
+      (is (laws/applicative-homomorphism 1 #(+ % 1) #(f/of (type []) %))))
     (testing "interchange"
       (is (laws/applicative-interchange 2 [#(+ % 1)] #(f/of (type []) %)))))
 
@@ -53,7 +53,7 @@
       (is (laws/chain-rec-stacksafe #(f/chain-rec f/Maybe %1 %2) #(f/of f/Maybe %))))
 
     (testing "responds to failure immediately"
-      (is (= (f/chain-rec f/Maybe (fn [] f/nothing) 100)
+      (is (= (f/chain-rec f/Maybe (fn [next done n] f/nothing) 100)
              f/nothing)))
 
     (testing "responds to failure on next step"
@@ -66,7 +66,7 @@
 
   (testing "Monad"
     (testing "left-identity"
-      (is (laws/monad-left-identity [1] #(f/of (type []) (+ 1 %)) #(f/of (type []) %))))
+      (is (laws/monad-left-identity 1 #(f/of (type []) (+ 1 %)) #(f/of (type []) %))))
 
     (testing "right-identity"
       (is (laws/monad-right-identity [1] #(f/of (type []) %)))))

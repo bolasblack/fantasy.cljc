@@ -1,11 +1,17 @@
 (ns fantasy.maybe.test
   (:require [fantasy.core :as f]
-            [clojure.test :refer [deftest testing are is]]))
+            [clojure.test :refer [deftest testing are is]])
+  (:import #?(:clj [fantasy.maybe Just Nothing])))
 
 (deftest Maybe
   (testing "helper methods"
     (are [x y] (= x y)
-      (f/just 1) (f/Just. 1)
+      #?@(:cljs [(f/just 1) (f/Just. 1)
+                 f/nothing (f/Nothing.)]
+          :clj [(f/just 1) (Just. 1)
+                f/nothing (Nothing.)])
+      (f/just 1) (f/just 1)
+      f/nothing f/nothing
       (f/from-maybe (f/just 1) 2) 1
       (f/from-maybe f/nothing 2) 2))
 
@@ -52,7 +58,7 @@
   (testing "chain"
     (are [x y] (= x y)
       (f/chain #(f/just (inc %)) f/nothing) f/nothing
-      (f/chain (fn [] f/nothing) (f/right 2)) f/nothing
+      (f/chain (fn [a] f/nothing) (f/right 2)) f/nothing
       (f/chain #(f/just (inc %)) (f/just 2)) (f/just 3)))
 
   (testing "traverse"

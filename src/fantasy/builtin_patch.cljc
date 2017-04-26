@@ -1,145 +1,38 @@
 (ns fantasy.builtin-patch
   (:require [fantasy.protocols :as p]
             [fantasy.standard-func :as sf]
-            [fantasy.utils :as u :include-macros true]))
-
-(defn patch-collection [type emptied & {:keys [wrapper] :or {wrapper identity}}]
-  (defmethod sf/empty type [type]
-    emptied)
-
-  (defmethod sf/zero type [type]
-    emptied)
-
-  (defmethod sf/of type [type-rep value]
-    (conj (sf/zero type-rep) value))
-
-  (defmethod sf/chain-rec type [type-rep f x]
-    (loop [todo [x]
-           done []]
-      (if (> (count todo) 0)
-        (let [result (f u/chain-rec-next u/chain-rec-done (first todo))
-              {:keys [more-todo more-done]} (->> result
-                                                 (group-by #(if (:next? %) :more-todo :more-done))
-                                                 (map (fn [[key results]] [key (map #(.-value %) results)]))
-                                                 (into {}))]
-          (recur (concat more-todo (next todo))
-                 (concat done more-done)))
-        done)))
-
-  (extend-type type
-    p/Setoid
-    (p/equals [this that]
-      (= this that))
-
-    p/Functor
-    (p/map [this f]
-      (wrapper (map f this)))
-
-    p/Foldable
-    (p/reduce [this f x]
-      (reduce f x this))
-
-    p/Semigroup
-    (p/concat [this that]
-      (wrapper (concat this that)))
-
-    p/Alt
-    (p/alt [this that]
-      (wrapper (concat this that)))
-
-    p/Apply
-    (p/ap [this that]
-      (wrapper (reduce
-                (fn [acc f]
-                  (p/concat acc (p/map this f)))
-                (empty this)
-                that)))
-
-    p/Chain
-    (p/chain [this f]
-      (wrapper (mapcat f this)))
-
-    p/Extend
-    (p/extend [this f]
-      (wrapper (conj (empty this) (f this))))
-
-    p/Applicative
-
-    p/Monoid
-
-    p/Plus
-
-    p/ChainRec))
+            [fantasy.builtin-patch.macros :as macros :include-macros true]))
 
 (defn patch-vector []
   #?(:cljs (do
-             (patch-collection PersistentVector []))
+             (macros/patch-collection-type PersistentVector []))
      :clj (do
-            (patch-collection clojure.lang.PersistentVector []))))
+            (macros/patch-collection-type clojure.lang.PersistentVector []))))
 
 (defn patch-list []
   #?(:cljs (do
-             (patch-collection List '())
-             (patch-collection EmptyList '())
-             (patch-collection LazySeq (lazy-seq)))
+             (macros/patch-collection-type List '())
+             (macros/patch-collection-type EmptyList '())
+             (macros/patch-collection-type LazySeq (lazy-seq)))
      :clj (do
-            (patch-collection clojure.lang.ASeq '()))))
+            (macros/patch-collection-type clojure.lang.ASeq '())
+            (macros/patch-collection-type clojure.lang.PersistentList$EmptyList '())
+            (macros/patch-collection-type clojure.lang.LazySeq (lazy-seq)))))
 
 (defn patch-set []
   #?(:cljs (do
-             (patch-collection PersistentHashSet #{} :wrapper set)
-             (patch-collection PersistentTreeSet #{} :wrapper set))
+             (macros/patch-collection-type PersistentHashSet #{} :wrapper set)
+             (macros/patch-collection-type PersistentTreeSet #{} :wrapper set))
      :clj (do
-            (patch-collection clojure.lang.APersistentSet #{} :wrapper set))))
+            (macros/patch-collection-type clojure.lang.APersistentSet #{} :wrapper set))))
 
-(defn patch-hash
-  ([type emptied]
-   (defmethod sf/zero type [type]
-     emptied)
-
-   (defmethod sf/empty type [type]
-     emptied)
-
-   (extend-type type
-     p/Setoid
-     (p/equals [this that]
-       (= this that))
-
-     p/Semigroup
-     (p/concat [this that]
-       (merge this that))
-
-     p/Functor
-     (p/map [this f]
-       (into emptied (map (fn [[key value]]
-                            [key (f value)])
-                          this)))
-
-     p/Apply
-     (p/ap [this that]
-       (into emptied (map (fn [[key value]]
-                            [key ((get that key identity) value)])
-                          this)))
-
-     p/Alt
-     (p/alt [this that]
-       (p/concat this that))
-
-     p/Foldable
-     (p/reduce [this f x]
-       (reduce f x this))
-
-     p/Plus
-
-     p/Monoid))
-
-  ([]
-   #?(:cljs (do
-              (patch-hash PersistentArrayMap {})
-              (patch-hash PersistentHashMap {}))
-      :clj (do
-             (patch-hash clojure.lang.PersistentArrayMap {})
-             (patch-hash clojure.lang.PersistentHashMap {})))))
+(defn patch-hash []
+  #?(:cljs (do
+             (macros/patch-hash-type PersistentArrayMap {})
+             (macros/patch-hash-type PersistentHashMap {}))
+     :clj (do
+            (macros/patch-hash-type clojure.lang.PersistentArrayMap {})
+            (macros/patch-hash-type clojure.lang.PersistentHashMap {}))))
 
 (defn patch-string []
   (defmethod sf/empty #?(:cljs js/String :clj java.lang.String) [type]
@@ -171,5 +64,5 @@
   (patch-list)
   (patch-set)
   (patch-hash)
-  (patch-number)
-  (patch-string))
+  (patch-string)
+  (patch-number))

@@ -3,29 +3,31 @@
             [fantasy.standard-func :as sf]
             [fantasy.utils :as u :include-macros true]))
 
-(defmacro defcompose [F G]
-  `(do
-     (deftype compose# [~'value]
-       IEquiv
-       (-equiv [this# other#]
-         (u/equals this# other#))
+(deftype Compose [value]
+  #?@(:cljs [IEquiv (-equiv [this that] (u/equals this that))]
+      :clj [Object (equals [this that] (u/equals this that))])
 
-       p/Applicative
+  p/Applicative
 
-       p/Apply
-       (p/ap [this# f#]
-         (new compose# (p/ap (.-value this#)
-                             (p/map (.-value f#)
-                                    (fn [u#] (fn [y#] (p/ap y# u#)))))))
-       p/Functor
-       (p/map [this# f#]
-         (new compose# (p/map (.-value this#)
-                              (fn [y#] (p/map y# f#))))))
+  p/Apply
+  (p/ap [this f]
+    (let [new-value (p/ap (.-value this)
+                          (p/map (.-value f)
+                                 (fn [u] (fn [y] (p/ap y u)))))]
+      (new Compose new-value)))
 
-     (u/defpr [compose#] [this#]
-       (str "((Compose. " ~(name F) " " ~(name G) ") " (.-value this#) ")"))
+  p/Functor
+  (p/map [this f]
+    (let [new-value (p/map (.-value this)
+                           (fn [y] (p/map y f)))]
+      (new Compose new-value))))
 
-     (defmethod sf/of compose# [type# value#]
-       (new compose# (sf/of ~F (sf/of ~G value#))))
+(defmethod sf/of Compose [a value]
+  (new Compose (sf/of (:type-rep-f a) (sf/of (:type-rep-g a) value))))
 
-     compose#))
+(u/defpr [Compose] [this]
+  (str "(Compose. " (.-value this) ")"))
+
+(defn gen-compose-type [type-rep-f type-rep-g]
+  {:fl-of? true :type Compose
+   :type-rep-f type-rep-f, :type-rep-g type-rep-g})

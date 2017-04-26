@@ -1,7 +1,8 @@
 (ns fantasy.maybe.laws-test
-  (:require [fantasy.core :as f]
+  (:require [fantasy.core :as f #?@(:cljs [:refer [Identity]])]
             [fantasy.laws :as laws]
-            [clojure.test :refer [deftest testing are is]]))
+            [clojure.test :refer [deftest testing is]])
+  (:import #?(:clj [fantasy.identity Identity])))
 
 (deftest Maybe
   (testing "Setoid"
@@ -38,8 +39,7 @@
       (is (laws/applicative-identity f/nothing #(f/of f/Maybe %)))
       (is (laws/applicative-identity (f/just 1) #(f/of f/Maybe %))))
     (testing "homomorphism"
-      (is (laws/applicative-homomorphism f/nothing #(+ % 1) #(f/of f/Maybe %)))
-      (is (laws/applicative-homomorphism (f/just 1) #(+ % 1) #(f/of f/Maybe %))))
+      (is (laws/applicative-homomorphism 1 #(+ % 1) #(f/of f/Maybe %))))
     (testing "interchange"
       (is (laws/applicative-interchange 2 f/nothing #(f/of f/Maybe %)))
       (is (laws/applicative-interchange 2 (f/just #(+ % 1)) #(f/of f/Maybe %)))))
@@ -51,7 +51,7 @@
 
   (testing "Foldable"
     (is (laws/foldable f/nothing + 0))
-    (is (laws/foldable (f/just [1 2 3 4]) + 0)))
+    (is (laws/foldable (f/just 5) + 0)))
 
   (testing "ChainRec"
     (testing "equivalence"
@@ -65,7 +65,7 @@
       (is (laws/chain-rec-stacksafe #(f/chain-rec f/Maybe %1 %2) #(f/of f/Maybe %))))
 
     (testing "responds to failure immediately"
-      (is (= (f/chain-rec f/Maybe (fn [] f/nothing) 100)
+      (is (= (f/chain-rec f/Maybe (fn [next done n] f/nothing) 100)
              f/nothing)))
 
     (testing "responds to failure on next step"
@@ -78,8 +78,7 @@
 
   (testing "Monad"
     (testing "left-identity"
-      (is (laws/monad-left-identity f/nothing #(+ 1 %) #(f/of f/Maybe %)))
-      (is (laws/monad-left-identity (f/just 1) #(+ 1 %) #(f/of f/Maybe %))))
+      (is (laws/monad-left-identity 1 #(+ 1 %) #(f/of f/Maybe %))))
 
     (testing "right-identity"
       (is (laws/monad-right-identity f/nothing #(f/of f/Maybe %)))
@@ -87,16 +86,16 @@
 
   (testing "Traversable"
     (testing "naturality"
-      (is (laws/traversable-naturality f/to-maybe f/nothing f/Identity f/Maybe))
-      (is (laws/traversable-naturality f/to-maybe (f/just (f/Identity. 1)) f/Identity f/Maybe)))
+      (is (laws/traversable-naturality f/to-maybe f/nothing Identity f/Maybe))
+      (is (laws/traversable-naturality f/to-maybe (f/just (Identity. 1)) Identity f/Maybe)))
 
     (testing "identity"
-      (is (laws/traversable-identity f/nothing f/Identity))
-      (is (laws/traversable-identity (f/just 1) f/Identity)))
+      (is (laws/traversable-identity f/nothing Identity))
+      (is (laws/traversable-identity (f/just 1) Identity)))
 
     (testing "composition"
-      (is (laws/traversable-composition f/nothing f/Identity f/Maybe))
-      (is (laws/traversable-composition (f/just (f/Identity. (f/just 1))) f/Identity f/Maybe))))
+      (is (laws/traversable-composition f/nothing Identity f/Maybe))
+      (is (laws/traversable-composition (f/just (Identity. (f/just 1))) Identity f/Maybe))))
 
   (testing "Monoid"
     (testing "left-identity"
@@ -130,8 +129,14 @@
 
   (testing "extend-associativity"
     (testing "associativity"
-      (is (laws/extend-associativity f/nothing #(+ 1 (.-value %)) #(* (.-value %) (.-value %))))
-      (is (laws/extend-associativity (f/just 2) #(+ 1 (.-value %)) #(* (.-value %) (.-value %))))))
+      (is (laws/extend-associativity
+           f/nothing
+           #(+ 1 (.-value %))
+           #(* (.-value %) (.-value %))))
+      (is (laws/extend-associativity
+           (f/just 2)
+           #(+ 1 (.-value %))
+           #(* (.-value %) (.-value %))))))
 
   (testing "Comonad"
     (is (= nil (f/extract f/nothing)))

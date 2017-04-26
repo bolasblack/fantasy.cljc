@@ -1,7 +1,8 @@
 (ns fantasy.either.laws-test
-  (:require [fantasy.core :as f]
+  (:require [fantasy.core :as f #?@(:cljs [:refer [Identity]])]
             [fantasy.laws :as laws]
-            [clojure.test :refer [deftest testing are is]]))
+            [clojure.test :refer [deftest testing is]])
+  (:import #?(:clj [fantasy.identity Identity])))
 
 (deftest Either
   (testing "Setoid"
@@ -33,8 +34,7 @@
       (is (laws/applicative-identity (f/left 1) #(f/of f/Either %)))
       (is (laws/applicative-identity (f/right 1) #(f/of f/Either %))))
     (testing "homomorphism"
-      (is (laws/applicative-homomorphism (f/left 1) #(+ % 1) #(f/of f/Either %)))
-      (is (laws/applicative-homomorphism (f/right 1) #(+ % 1) #(f/of f/Either %))))
+      (is (laws/applicative-homomorphism 1 #(+ % 1) #(f/of f/Either %))))
     (testing "interchange"
       (is (laws/applicative-interchange 2 (f/left #(+ % 1)) #(f/of f/Either %)))
       (is (laws/applicative-interchange 2 (f/right #(+ % 1)) #(f/of f/Either %)))))
@@ -56,7 +56,7 @@
       (is (laws/chain-rec-stacksafe #(f/chain-rec f/Either %1 %2) #(f/of f/Either %))))
 
     (testing "responds to failure immediately"
-      (is (= (f/chain-rec f/Either #(f/left "ERROR") 100)
+      (is (= (f/chain-rec f/Either (fn [next done n] (f/left "ERROR")) 100)
              (f/left "ERROR"))))
 
     (testing "responds to failure on next step"
@@ -69,8 +69,7 @@
 
   (testing "Monad"
     (testing "left-identity"
-      (is (laws/monad-left-identity (f/left 1) #(+ 1 %) #(f/of f/Either %)))
-      (is (laws/monad-left-identity (f/right 1) #(+ 1 %) #(f/of f/Either %))))
+      (is (laws/monad-left-identity 1 #(+ 1 %) #(f/of f/Either %))))
     (testing "right-identity"
       (is (laws/monad-right-identity (f/left 1) #(f/of f/Either %)))
       (is (laws/monad-right-identity (f/right 1) #(f/of f/Either %)))))
@@ -79,12 +78,12 @@
     (testing "associativity"
       (is (laws/extend-associativity
            (f/left 1)
-           #(f/left (f/map (fn [a] (+ a 2)) %))
-           #(f/left (f/map (fn [a] (+ a 1)) %))))
+           #(+ 1 (.-value %))
+           #(* (.-value %) (.-value %))))
       (is (laws/extend-associativity
            (f/right 1)
-           #(f/right (f/map (fn [a] (+ a 2)) %))
-           #(f/right (f/map (fn [a] (+ a 1)) %))))))
+           #(+ 1 (.-value %))
+           #(* (.-value %) (.-value %))))))
 
   (testing "Bifunctor"
     (testing "identity"
@@ -108,19 +107,19 @@
       (is (laws/alt-distributivity (f/right 1) (f/right 2) #(+ 1 %)))))
 
   (testing "Foldable"
-    (is (laws/foldable (f/left [1 2 3 4]) + 0))
-    (is (laws/foldable (f/right [1 2 3 4]) + 0)))
+    (is (laws/foldable (f/left 5) + 0))
+    (is (laws/foldable (f/right 5) + 0)))
 
   (testing "Traversable"
     (testing "naturality"
-      (is (laws/traversable-naturality f/to-maybe (f/left (f/Identity. 1)) f/Identity f/Maybe))
-      (is (laws/traversable-naturality f/to-maybe (f/right (f/Identity. 1)) f/Identity f/Maybe)))
+      (is (laws/traversable-naturality f/to-maybe (f/left (Identity. 1)) Identity f/Maybe))
+      (is (laws/traversable-naturality f/to-maybe (f/right (Identity. 1)) Identity f/Maybe)))
     (testing "identity"
-      (is (laws/traversable-identity (f/left 1) f/Identity))
-      (is (laws/traversable-identity (f/right 1) f/Identity)))
+      (is (laws/traversable-identity (f/left 1) Identity))
+      (is (laws/traversable-identity (f/right 1) Identity)))
     (testing "composition"
-      (is (laws/traversable-composition (f/left (f/Identity. (f/left 1))) f/Identity f/Maybe))
-      (is (laws/traversable-composition (f/right (f/Identity. (f/right 1))) f/Identity f/Maybe))))
+      (is (laws/traversable-composition (f/left (Identity. (f/left 1))) Identity f/Maybe))
+      (is (laws/traversable-composition (f/right (Identity. (f/right 1))) Identity f/Maybe))))
 
   (testing "Comonad"
     (is (= 1 (f/extract (f/left 1))))

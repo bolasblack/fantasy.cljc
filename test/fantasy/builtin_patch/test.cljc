@@ -1,5 +1,5 @@
 (ns fantasy.builtin-patch.test
-  (:refer-clojure :exclude [map reduce concat empty])
+  (:refer-clojure :exclude [map reduce concat empty extend])
   (:require [fantasy.core :as f]
             [clojure.test :refer [deftest testing are is]]))
 
@@ -123,7 +123,7 @@
     {:y 3 :z 4} {:x 1 :y 2} {:x 1 :y 3 :z 4}))
 
 (deftest zero
-  (are [x y] (= (f/zero (type x) x) y)
+  (are [x y] (= (f/zero (type x)) y)
     [1] []
     '(1) '()
     #{1} #{}

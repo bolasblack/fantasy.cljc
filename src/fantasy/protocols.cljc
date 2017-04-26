@@ -1,5 +1,5 @@
 (ns fantasy.protocols
-  (:refer-clojure :exclude [map reduce concat empty]))
+  (:refer-clojure :exclude [map reduce concat empty extend]))
 
 (defprotocol Functor
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#functor"
@@ -15,7 +15,7 @@
 
 (defprotocol Setoid
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#setoid"
-  (equals [this that]))
+  (-equals [this that]))
 
 (defprotocol Alt ; extends Functor
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#alt"
@@ -73,3 +73,4 @@
 
 (defprotocol ChainRec ; extends Chain
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#chainRec")
+;; (chain-rec [])

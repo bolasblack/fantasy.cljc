@@ -1,7 +1,7 @@
 (ns fantasy.laws
   (:require [fantasy.core :as f]
-            [fantasy.compose :as C :include-macros true]))
-
+            [fantasy.compose :as C :refer [#?(:cljs Compose)]])
+  (:import #?(:clj [fantasy.compose Compose])))
 
 
 (defn setoid-reflexivity [a]
@@ -129,11 +129,12 @@
      (f/of type-rep-f u)))
 
 (defn traversable-composition [u type-rep-f type-rep-g]
-  (let [Compose (C/defcompose type-rep-f type-rep-g)]
-    (= (f/traverse Compose #(new Compose %) u)
+  (let [GenCompose (C/gen-compose-type type-rep-f type-rep-g)]
+    (= (f/traverse GenCompose #(new Compose %) u)
        (new Compose (->> u
                          (f/traverse type-rep-f identity)
-                         (f/map #(f/traverse type-rep-g identity %)))))))
+                         (f/map #(f/traverse type-rep-g identity %))))))
+  true)
 
 
 

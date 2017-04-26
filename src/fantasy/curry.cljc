@@ -1,10 +1,13 @@
 (ns fantasy.curry
-  (:require [fantasy.utils :as u]))
+  (:require [fantasy.utils :as u :include-macros true]))
 
 (def __ "@@ramda/placeholder")
 
 (defn- arglist-count [f]
-  #?(:clj (-> f class .getDeclaredMethods count)
+  #?(:clj (->> (class f)
+               .getDeclaredMethods
+               (filter #(= "invoke" (.getName %)))
+               count)
      :cljs (-> (.keys js/Object f)
                (.filter (fn [name] (re-find #"cljs\$core\$IFn\$_invoke\$arity\$" name)))
                count
@@ -93,7 +96,7 @@
   ([f]
    (condp = (arglist-count f)
      1 (curry (arity f) f)
-     (u/throw-error (str "curry called with multiple arglist function, use (curry arity f) instead"))))
+     (u/throw-error (str "curry called with multiple arglist function " f ", use (curry arity f) instead"))))
   ([arity f]
    (condp = arity
      0 f
@@ -103,4 +106,4 @@
      (curry-n arity [] f))))
 
 (defmacro defcurry [name & body]
-  `(def ~name (curry (fn ~@body))))
+  `(def ~name (curry (fn ~name ~@body))))
