@@ -1,4 +1,4 @@
-(def +project+ 'org.clojars.c4605/fantasy)
+(def +project+ 'c4605/fantasy)
 (def +version+ "0.1.0")
 (def +description+ "")
 
