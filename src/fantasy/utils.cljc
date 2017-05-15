@@ -33,7 +33,7 @@
 (defmacro throw-error [msg]
   `(if-cljs
     (throw (js/Error ~msg))
-    (throw (RuntimeException. ~(with-meta msg `{:tag java.lang.String})))))
+    (throw (RuntimeException. ~msg))))
 
 (defn equals [a b]
   (and

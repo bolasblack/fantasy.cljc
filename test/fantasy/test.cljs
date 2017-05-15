@@ -7,7 +7,8 @@
             [fantasy.maybe.test :as maybe-test]
             [fantasy.maybe.laws-test :as maybe-laws-test]
             [fantasy.builtin-patch.test :as builtin-patch-test]
-            [fantasy.builtin-patch.laws-test :as builtin-patch-laws-test]))
+            [fantasy.builtin-patch.laws-test :as builtin-patch-laws-test]
+            [fantasy.standard-func-test :as standard-func-test]))
 
 (nodejs/enable-util-print!)
 
