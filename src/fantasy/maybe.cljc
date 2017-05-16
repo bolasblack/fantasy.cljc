@@ -1,7 +1,7 @@
 (ns fantasy.maybe
   (:require [fantasy.protocols :as p]
             [fantasy.standard-func :as standard-fn]
-            [fantasy.utils :as u :refer [defpr extend-types] :include-macros true :refer-macros [defpr extend-types]]))
+            [fantasy.utils :as u :refer [extend-types] :include-macros true :refer-macros [extend-types]]))
 
 (defprotocol Maybe
   (just? [this])
@@ -96,10 +96,14 @@
 
  p/Plus
 
- p/Alternative)
+ p/Alternative
 
-(defpr [Just Nothing] [this]
-  (if (nothing? this) "(Nothing. )" (str "(Just. " (.-value this) ")")))
+ p/Printable
+ (p/-repr [this]
+          (if (nothing? this) "(Nothing. )" (str "(Just. " (.-value this) ")"))))
+
+(u/make-printable Just)
+(u/make-printable Nothing)
 
 (def nothing (Nothing.))
 

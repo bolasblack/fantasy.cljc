@@ -1,4 +1,5 @@
-(ns fantasy.utils)
+(ns fantasy.utils
+  (:require [fantasy.protocols :as p]))
 
 (defmacro if-cljs
   "Return then if we are generating cljs code and else for Clojure code.
@@ -20,12 +21,12 @@
   `(if-cljs
     (do ~@(for [type types]
             `(extend-type ~type
-               ~'Object
-               (~'toString [this#]
-                ((fn ~@body) this#))
-               ~'IPrintWithWriter
-               (~'-pr-writer [this# writer# opts#]
-                (~'write-all writer# ((fn ~@body) this#))))))
+               Object
+               (toString [this#]
+                 ((fn ~@body) this#))
+               IPrintWithWriter
+               (-pr-writer [this# writer# opts#]
+                 (write-all writer# ((fn ~@body) this#))))))
     (do ~@(for [type types]
             `(defmethod clojure.core/print-method ~type [this# writer#]
                (.write writer# ((fn ~@body) this#)))))))
@@ -34,6 +35,17 @@
   `(if-cljs
     (throw (js/Error ~msg))
     (throw (RuntimeException. ~msg))))
+
+(defn make-printable [type]
+  #?(:cljs (extend-type type
+             Object
+             (toString [this]
+               (p/-repr this))
+             IPrintWithWriter
+             (-pr-writer [this writer _]
+               (write-all writer (p/-repr this))))
+     :clj (defmethod print-method type [this writer]
+            (.write writer (p/-repr this)))))
 
 (defn equals [a b]
   (and

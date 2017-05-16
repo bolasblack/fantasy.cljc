@@ -1,7 +1,7 @@
 (ns fantasy.either
   (:require [fantasy.protocols :as p]
             [fantasy.standard-func :as standard-fn]
-            [fantasy.utils :as u :refer [defpr extend-types] :include-macros true :refer-macros [defpr extend-types]]))
+            [fantasy.utils :as u :refer [extend-types] :include-macros true :refer-macros [extend-types]]))
 
 (defprotocol Either
   (left? [this])
@@ -92,10 +92,14 @@
 
  p/Monad
 
- p/ChainRec)
+ p/ChainRec
 
-(defpr [Left Right] [this]
-  (str (if (left? this) "(Left. " "(Right. ") (.-value this) ")"))
+ p/Printable
+ (p/-repr [this]
+          (str (if (left? this) "(Left. " "(Right. ") (.-value this) ")")))
+
+(u/make-printable Left)
+(u/make-printable Right)
 
 (defn left [value]
   (Left. value))

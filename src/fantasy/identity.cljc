@@ -3,7 +3,7 @@
             [fantasy.standard-func :as standard-fn]
             [fantasy.funcs :as funcs]
             [fantasy.maybe :as maybe-ns]
-            [fantasy.utils :as u :refer [defpr] :include-macros true :refer-macros [defpr]]))
+            [fantasy.utils :as u :include-macros true]))
 
 (deftype Identity [value]
   #?@(:cljs [IEquiv (-equiv [this that] (p/-equals this that))]
@@ -47,10 +47,13 @@
   (p/extract [this]
     (.-value this))
 
-  p/Monad)
+  p/Monad
 
-(defpr [Identity] [this]
-  (str "(Identity. " (.-value this) ")"))
+  p/Printable
+  (p/-repr [this]
+    (str "(Identity. " (.-value this) ")")))
+
+(u/make-printable Identity)
 
 (defmethod funcs/to-maybe Identity [a]
   (if (nil? (.-value a))

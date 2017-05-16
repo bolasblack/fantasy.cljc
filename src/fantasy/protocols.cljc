@@ -74,3 +74,6 @@
 (defprotocol ChainRec ; extends Chain
   "https://github.com/fantasyland/fantasy-land/blob/master/README.md#chainRec")
 ;; (chain-rec [])
+
+(defprotocol Printable
+  (-repr [this]))
