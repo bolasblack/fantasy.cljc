@@ -29,10 +29,12 @@
 (defn patch-hash []
   #?(:cljs (do
              (macros/patch-hash-type PersistentArrayMap {})
-             (macros/patch-hash-type PersistentHashMap {}))
+             (macros/patch-hash-type PersistentHashMap {})
+             (macros/patch-hash-type PersistentTreeMap {}))
      :clj (do
             (macros/patch-hash-type clojure.lang.PersistentArrayMap {})
-            (macros/patch-hash-type clojure.lang.PersistentHashMap {}))))
+            (macros/patch-hash-type clojure.lang.PersistentHashMap {})
+            (macros/patch-hash-type clojure.lang.PersistentTreeMap {}))))
 
 (defn patch-string []
   (defmethod sf/empty #?(:cljs js/String :clj java.lang.String) [type]

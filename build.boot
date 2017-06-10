@@ -1,9 +1,9 @@
 (def +project+ 'c4605/fantasy)
-(def +version+ "0.1.0")
+(def +version+ "0.2.0")
 (def +description+ "")
 
 (set-env!
- :source-paths #{"src"}
+ :resource-paths #{"src"}
  :dependencies '[[org.clojure/clojurescript "1.9.521" :scope "test"]
                  [org.clojure/clojure "1.8.0" :scope "test"]
                  [adzerk/boot-cljs "1.7.228-2" :scope "test"]
