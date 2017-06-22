@@ -43,23 +43,38 @@
   (defmethod sf/zero #?(:cljs js/String :clj java.lang.String) [type]
     "")
 
-  (extend-type #?(:cljs js/String :clj java.lang.String)
-    p/Semigroup
-    (p/concat [this that]
-      (str this that))
+  #?(:cljs (extend-type string
+             p/Semigroup
+             (concat [this that]
+               (str this that))
 
-    p/Monoid))
+             p/Monoid
+             )
+
+     :clj (extend-type java.lang.String
+            p/Semigroup
+            (concat [this that]
+              (str this that))
+
+            p/Monoid)))
 
 (defn patch-number []
   (defmethod sf/zero #?(:cljs js/Number :clj java.lang.Number) [type]
     0)
 
-  (extend-type #?(:cljs js/Number :clj java.lang.Number)
-    p/Ord
-    (p/lte [this that]
-      (<= this that))
+  #?(:cljs (extend-type number
+             p/Ord
+             (lte [this that]
+               (<= this that))
 
-    p/Plus))
+             p/Plus)
+
+     :clj (extend-type java.lang.Number
+            p/Ord
+            (lte [this that]
+              (<= this that))
+
+            p/Plus)))
 
 (defn patch-all []
   (patch-vector)

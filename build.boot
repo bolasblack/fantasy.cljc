@@ -1,5 +1,5 @@
 (def +project+ 'c4605/fantasy)
-(def +version+ "0.2.0")
+(def +version+ "0.2.1")
 (def +description+ "")
 
 (set-env!
